@@ -1,7 +1,7 @@
 /** @file
   Generic ARM implementation of TimerLib.h
 
-  Copyright (c) 2011-2014, ARM Limited. All rights reserved.
+  Copyright (c) 2011-2016, ARM Limited. All rights reserved.
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -23,6 +23,14 @@
 #include <Library/ArmGenericTimerCounterLib.h>
 
 #define TICKS_PER_MICRO_SEC     (PcdGet32 (PcdArmArchTimerFreqInHz)/1000000U)
+
+// Select appropriate multiply function for platform architecture.
+#ifdef MDE_CPU_ARM
+#define MultU64xN MultU64x32
+#else
+#define MultU64xN MultU64x64
+#endif
+
 
 RETURN_STATUS
 EFIAPI
@@ -76,6 +84,28 @@ TimerConstructor (
   return RETURN_SUCCESS;
 }
 
+/**
+  A local utility function that returns the PCD value, if specified.
+  Otherwise it defaults to ArmGenericTimerGetTimerFreq.
+
+  @return The timer frequency.
+
+**/
+STATIC
+UINTN
+EFIAPI
+GetPlatformTimerFreq (
+  )
+{
+  UINTN TimerFreq;
+
+  TimerFreq = PcdGet32 (PcdArmArchTimerFreqInHz);
+  if (TimerFreq == 0) {
+    TimerFreq = ArmGenericTimerGetTimerFreq ();
+  }
+  return TimerFreq;
+}
+
 
 /**
   Stalls the CPU for the number of microseconds specified by MicroSeconds.
@@ -93,23 +123,6 @@ MicroSecondDelay (
 {
   UINT64 TimerTicks64;
   UINT64 SystemCounterVal;
-  UINT64 (EFIAPI
-          *MultU64xN) (
-            IN UINT64 Multiplicand,
-            IN UINTN  Multiplier
-            );
-  UINTN TimerFreq;
-
-#ifdef MDE_CPU_ARM
-  MultU64xN = MultU64x32;
-#else
-  MultU64xN = MultU64x64;
-#endif
-
-  TimerFreq = PcdGet32 (PcdArmArchTimerFreqInHz);
-  if (TimerFreq == 0) {
-    TimerFreq = ArmGenericTimerGetTimerFreq ();
-  }
 
   // Calculate counter ticks that can represent requested delay:
   //  = MicroSeconds x TICKS_PER_MICRO_SEC
@@ -117,7 +130,7 @@ MicroSecondDelay (
   TimerTicks64 = DivU64x32 (
                    MultU64xN (
                      MicroSeconds,
-                     TimerFreq
+                     GetPlatformTimerFreq ()
                      ),
                    1000000U
                    );
@@ -228,4 +241,53 @@ GetPerformanceCounterProperties (
   }
 
   return (UINT64)ArmGenericTimerGetTimerFreq ();
+}
+
+/**
+  Converts elapsed ticks of performance counter to time in nanoseconds.
+
+  This function converts the elapsed ticks of running performance counter to
+  time value in unit of nanoseconds.
+
+  @param  Ticks     The number of elapsed ticks of running performance counter.
+
+  @return The elapsed time in nanoseconds.
+
+**/
+UINT64
+EFIAPI
+GetTimeInNanoSecond (
+  IN      UINT64                     Ticks
+  )
+{
+  UINT64  NanoSeconds;
+  UINT32  Remainder;
+  UINT32  TimerFreq;
+
+  TimerFreq = GetPlatformTimerFreq ();
+  //
+  //          Ticks
+  // Time = --------- x 1,000,000,000
+  //        Frequency
+  //
+  NanoSeconds = MultU64xN (
+                  DivU64x32Remainder (
+                    Ticks,
+                    TimerFreq,
+                    &Remainder),
+                  1000000000U
+                  );
+
+  //
+  // Frequency < 0x100000000, so Remainder < 0x100000000, then (Remainder * 1,000,000,000)
+  // will not overflow 64-bit.
+  //
+  NanoSeconds += DivU64x32 (
+                   MultU64xN (
+                     (UINT64) Remainder,
+                     1000000000U),
+                   TimerFreq
+                   );
+
+  return NanoSeconds;
 }
