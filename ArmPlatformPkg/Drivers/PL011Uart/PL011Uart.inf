@@ -34,7 +34,7 @@
   MdeModulePkg/MdeModulePkg.dec
   ArmPlatformPkg/ArmPlatformPkg.dec
 
-[Pcd]
+[FixedPcd]
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialBaudRate
 
   gArmPlatformTokenSpaceGuid.PL011UartInteger
