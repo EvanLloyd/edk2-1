@@ -2,7 +2,7 @@
   Serial I/O Port library functions with no library constructor/destructor
 
   Copyright (c) 2008 - 2010, Apple Inc. All rights reserved.<BR>
-  Copyright (c) 2011 - 2014, ARM Ltd. All rights reserved.<BR>
+  Copyright (c) 2011 - 2016, ARM Ltd. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -26,18 +26,37 @@
 //
 STATIC CONST UINT32 mInvalidControlBits = EFI_SERIAL_SOFTWARE_LOOPBACK_ENABLE;
 
-/*
+/**
 
   Initialise the serial port to the specified settings.
+  The serial port is re-configured only if the specified settings
+  are different from the current settings.
   All unspecified settings will be set to the default values.
 
-  @return    Always return EFI_SUCCESS or EFI_INVALID_PARAMETER.
+  @param  UartBase                The base address of the serial device.
+  @param  UartClkInHz             The clock in Hz for the serial device.
+  @param  BaudRate                The baud rate of the serial device. If the baud rate is not supported,
+                                  the speed will be reduced down to the nearest supported one and the
+                                  variable's value will be updated accordingly.
+  @param  ReceiveFifoDepth        The number of characters the device will buffer on input.
+                                  ReceiveFifoDepth value of 0 will use the device's default FIFO depth.
+  @param  Parity                  If applicable, this is the EFI_PARITY_TYPE that is computed or checked
+                                  as each character is transmitted or received. If the device does not
+                                  support parity, the value is the default parity value.
+  @param  DataBits                The number of data bits in each character
+  @param  StopBits                If applicable, the EFI_STOP_BITS_TYPE number of stop bits per character.
+                                  If the device does not support stop bits, the value is the default stop
+                                  bit value.
+
+  @retval RETURN_SUCCESS            All attributes were set correctly on the serial device.
+  @retval RETURN_INVALID_PARAMETER  One or more of the attributes has an unsupported value.
 
 **/
 RETURN_STATUS
 EFIAPI
 PL011UartInitializePort (
-  IN OUT UINTN               UartBase,
+  IN     UINTN               UartBase,
+  IN     UINT32              UartClkInHz,
   IN OUT UINT64              *BaudRate,
   IN OUT UINT32              *ReceiveFifoDepth,
   IN OUT EFI_PARITY_TYPE     *Parity,
@@ -47,21 +66,23 @@ PL011UartInitializePort (
 {
   UINT32      LineControl;
   UINT32      Divisor;
-
-  LineControl = 0;
+  UINT32      Integer;
+  UINT32      Fractional;
 
   // The PL011 supports a buffer of 1, 16 or 32 chars. Therefore we can accept
-  // 1 char buffer as the minimum fifo size. Because everything can be rounded down,
-  // there is no maximum fifo size.
+  // 1 char buffer as the minimum FIFO size. Because everything can be rounded down,
+  // there is no maximum FIFO size.
   if ((*ReceiveFifoDepth == 0) || (*ReceiveFifoDepth >= 32)) {
-    LineControl |= PL011_UARTLCR_H_FEN;
+    // Enable FIFO
+    LineControl = PL011_UARTLCR_H_FEN;
     if (PL011_UARTPID2_VER (MmioRead32 (UartBase + UARTPID2)) > PL011_VER_R1P4)
       *ReceiveFifoDepth = 32;
     else
       *ReceiveFifoDepth = 16;
   } else {
-    ASSERT (*ReceiveFifoDepth < 32);
-    // Nothing else to do. 1 byte fifo is default.
+    // Disable FIFO
+    LineControl = 0;
+    // Nothing else to do. 1 byte FIFO is default.
     *ReceiveFifoDepth = 1;
   }
 
@@ -125,7 +146,7 @@ PL011UartInitializePort (
     LineControl |= PL011_UARTLCR_H_STP2;
     break;
   case OneFiveStopBits:
-    // Only 1 or 2 stops bits are supported
+    // Only 1 or 2 stop bits are supported
   default:
     return RETURN_INVALID_PARAMETER;
   }
@@ -139,29 +160,54 @@ PL011UartInitializePort (
   // Baud Rate
   //
 
-  // If PL011 Integral value has been defined then always ignore the BAUD rate
+  // If PL011 Integer value has been defined then always ignore the BAUD rate
   if (PcdGet32 (PL011UartInteger) != 0) {
-      MmioWrite32 (UartBase + UARTIBRD, PcdGet32 (PL011UartInteger));
-      MmioWrite32 (UartBase + UARTFBRD, PcdGet32 (PL011UartFractional));
+      Integer = PcdGet32 (PL011UartInteger);
+      Fractional = PcdGet32 (PL011UartFractional);
   } else {
     // If BAUD rate is zero then replace it with the system default value
     if (*BaudRate == 0) {
       *BaudRate = PcdGet32 (PcdSerialBaudRate);
-      ASSERT (*BaudRate != 0);
+      if (*BaudRate == 0) {
+        return RETURN_INVALID_PARAMETER;
+      }
     }
 
-    Divisor = (PcdGet32 (PL011UartClkInHz) * 4) / *BaudRate;
-    MmioWrite32 (UartBase + UARTIBRD, Divisor >> 6);
-    MmioWrite32 (UartBase + UARTFBRD, Divisor & 0x3F);
+    Divisor = (UartClkInHz * 4) / *BaudRate;
+    Integer = Divisor >> 6;
+    Fractional = Divisor & 0x3F;
   }
 
-  // No parity, 1 stop, no fifo, 8 data bits
+  //
+  // If PL011 is already initialized, check the current settings
+  // and re-initialize only if the settings are different.
+  //
+  if (((MmioRead32 (UartBase + UARTCR) & PL011_UARTCR_UARTEN) != 0) &&
+       (MmioRead32 (UartBase + UARTLCR_H) == LineControl) &&
+       (MmioRead32 (UartBase + UARTIBRD) == Integer) &&
+       (MmioRead32 (UartBase + UARTFBRD) == Fractional)) {
+    // Nothing to do - already initialized with correct attributes
+    return RETURN_SUCCESS;
+  }
+
+  // Wait for the end of transmission
+  while ((MmioRead32 (UartBase + UARTFR) & PL011_UARTFR_TXFE) == 0);
+
+  // Disable UART: "The UARTLCR_H, UARTIBRD, and UARTFBRD registers must not be changed
+  // when the UART is enabled"
+  MmioWrite32 (UartBase + UARTCR, 0);
+
+  // Set Baud Rate Registers
+  MmioWrite32 (UartBase + UARTIBRD, Integer);
+  MmioWrite32 (UartBase + UARTFBRD, Fractional);
+
+  // Set Line Control Register
   MmioWrite32 (UartBase + UARTLCR_H, LineControl);
 
   // Clear any pending errors
   MmioWrite32 (UartBase + UARTECR, 0);
 
-  // Enable tx, rx, and uart overall
+  // Enable Tx, Rx, and UART overall
   MmioWrite32 (UartBase + UARTCR, PL011_UARTCR_RXE | PL011_UARTCR_TXE | PL011_UARTCR_UARTEN);
 
   return RETURN_SUCCESS;
