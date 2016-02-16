@@ -161,13 +161,13 @@ PL011UartInitializePort (
   //
 
   // If PL011 Integer value has been defined then always ignore the BAUD rate
-  if (PcdGet32 (PL011UartInteger) != 0) {
-      Integer = PcdGet32 (PL011UartInteger);
-      Fractional = PcdGet32 (PL011UartFractional);
+  if (FixedPcdGet32 (PL011UartInteger) != 0) {
+      Integer = FixedPcdGet32 (PL011UartInteger);
+      Fractional = FixedPcdGet32 (PL011UartFractional);
   } else {
     // If BAUD rate is zero then replace it with the system default value
     if (*BaudRate == 0) {
-      *BaudRate = PcdGet32 (PcdSerialBaudRate);
+      *BaudRate = FixedPcdGet32 (PcdSerialBaudRate);
       if (*BaudRate == 0) {
         return RETURN_INVALID_PARAMETER;
       }
