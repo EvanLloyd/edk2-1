@@ -133,7 +133,7 @@ LcdPlatformGetVram (
   } else {
     AllocationType = AllocateAddress;
   }
-  Status = gBS->AllocatePages (AllocationType, EfiBootServicesData, EFI_SIZE_TO_PAGES(((UINTN)LCD_VRAM_SIZE)), VramBaseAddress);
+  Status = gBS->AllocatePages (AllocationType, EfiRuntimeServicesData, EFI_SIZE_TO_PAGES(((UINTN)LCD_VRAM_SIZE)), VramBaseAddress);
   if (EFI_ERROR(Status)) {
     return Status;
   }
