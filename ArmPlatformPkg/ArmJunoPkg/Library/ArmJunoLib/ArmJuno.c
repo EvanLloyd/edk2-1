@@ -1,6 +1,6 @@
 /** @file
 *
-*  Copyright (c) 2013-2014, ARM Limited. All rights reserved.
+*  Copyright (c) 2013-2016, ARM Limited. All rights reserved.
 *
 *  This program and the accompanying materials
 *  are licensed and made available under the terms and conditions of the BSD License
@@ -18,6 +18,7 @@
 #include <Library/PcdLib.h>
 
 #include <Ppi/ArmMpCoreInfo.h>
+#include <Drivers/PL011Uart.h>
 
 #include <ArmPlatform.h>
 
@@ -112,7 +113,37 @@ ArmPlatformInitialize (
   IN  UINTN                     MpId
   )
 {
-  return RETURN_SUCCESS;
+  RETURN_STATUS       Status;
+  UINT64              BaudRate;
+  UINT32              ReceiveFifoDepth;
+  EFI_PARITY_TYPE     Parity;
+  UINT8               DataBits;
+  EFI_STOP_BITS_TYPE  StopBits;
+
+  Status = RETURN_SUCCESS;
+
+  //
+  // Initialize the Serial Debug UART
+  //
+  if (FixedPcdGet64 (PcdSerialDbgRegisterBase)) {
+    ReceiveFifoDepth = 0; // Use the default value for FIFO depth
+    Parity = (EFI_PARITY_TYPE)FixedPcdGet8 (PcdUartDefaultParity);
+    DataBits = FixedPcdGet8 (PcdUartDefaultDataBits);
+    StopBits = (EFI_STOP_BITS_TYPE)FixedPcdGet8 (PcdUartDefaultStopBits);
+
+    BaudRate = (UINTN)FixedPcdGet64 (PcdSerialDbgUartBaudRate);
+    Status = PL011UartInitializePort (
+               (UINTN)FixedPcdGet64 (PcdSerialDbgRegisterBase),
+               FixedPcdGet32 (PcdSerialDbgUartClkInHz),
+               &BaudRate,
+               &ReceiveFifoDepth,
+               &Parity,
+               &DataBits,
+               &StopBits
+               );
+  }
+
+  return Status;
 }
 
 /**
