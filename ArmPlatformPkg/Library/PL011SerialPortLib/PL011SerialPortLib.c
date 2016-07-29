@@ -25,7 +25,7 @@
 
 /**
   Initialise the serial device hardware with default settings.
-  
+
   @retval RETURN_SUCCESS            The serial device was initialised.
   @retval RETURN_INVALID_PARAMETER  One or more of the default settings
                                     has an unsupported value.
@@ -43,11 +43,11 @@ SerialPortInitialize (
   UINT8               DataBits;
   EFI_STOP_BITS_TYPE  StopBits;
 
-  BaudRate = (UINTN)FixedPcdGet64 (PcdUartDefaultBaudRate);
+  BaudRate = FixedPcdGet64 (PcdUartDefaultBaudRate);
   ReceiveFifoDepth = 0;         // Use default FIFO depth
   Parity = (EFI_PARITY_TYPE)FixedPcdGet8 (PcdUartDefaultParity);
   DataBits = FixedPcdGet8 (PcdUartDefaultDataBits);
-  StopBits = (EFI_STOP_BITS_TYPE) FixedPcdGet8 (PcdUartDefaultStopBits);
+  StopBits = (EFI_STOP_BITS_TYPE)FixedPcdGet8 (PcdUartDefaultStopBits);
 
   return PL011UartInitializePort (
            (UINTN)FixedPcdGet64 (PcdSerialRegisterBase),
