@@ -1,6 +1,6 @@
 /*++
 
-Copyright (c) 2013-2014, ARM Ltd. All rights reserved.<BR>
+Copyright (c) 2013-2017, ARM Ltd. All rights reserved.<BR>
 
 This program and the accompanying materials
 are licensed and made available under the terms and conditions of the BSD License
@@ -42,6 +42,46 @@ EFI_EVENT EfiExitBootServicesEvent      = (EFI_EVENT)NULL;
 UINTN mGicNumInterrupts                 = 0;
 
 HARDWARE_INTERRUPT_HANDLER  *gRegisteredInterruptHandlers = NULL;
+
+
+/**
+  Calculate GICD_ICFGRn base address and corresponding bit
+  field Int_config[1] of the GIC distributor register.
+
+  @param Source       Hardware source of the interrupt.
+  @param RegAddress   Corresponding GICD_ICFGRn base address.
+  @param Config1Bit   Bit number of F Int_config[1] bit in the register.
+
+  @retval EFI_SUCCESS       Source interrupt supported.
+  @retval EFI_UNSUPPORTED   Source interrupt is not supported.
+**/
+EFI_STATUS
+GicGetDistributorIcfgBaseAndBit (
+  IN HARDWARE_INTERRUPT_SOURCE             Source,
+  OUT UINTN                               *RegAddress,
+  OUT UINTN                               *Config1Bit
+  )
+{
+  UINTN                  RegIndex;
+  UINTN                  Field;
+
+  if (Source >= mGicNumInterrupts) {
+    ASSERT(Source < mGicNumInterrupts);
+    return EFI_UNSUPPORTED;
+  }
+
+  RegIndex = Source / ARM_GIC_ICDICFR_F_STRIDE;  // NOTE: truncation is significant
+  Field = Source % ARM_GIC_ICDICFR_F_STRIDE;
+  *RegAddress = PcdGet64 (PcdGicDistributorBase)
+                  + ARM_GIC_ICDICFR
+                  + (ARM_GIC_ICDICFR_BYTES * RegIndex);
+  *Config1Bit = ((Field * ARM_GIC_ICDICFR_F_WIDTH)
+                 + ARM_GIC_ICDICFR_F_CONFIG1_BIT);
+
+  return EFI_SUCCESS;
+}
+
+
 
 /**
   Register Handler for the specified interrupt source.
@@ -88,6 +128,7 @@ RegisterInterruptSource (
 EFI_STATUS
 InstallAndRegisterInterruptService (
   IN EFI_HARDWARE_INTERRUPT_PROTOCOL   *InterruptProtocol,
+  IN EFI_HARDWARE_INTERRUPT2_PROTOCOL  *Interrupt2Protocol,
   IN EFI_CPU_INTERRUPT_HANDLER          InterruptHandler,
   IN EFI_EVENT_NOTIFY                   ExitBootServicesEvent
   )
@@ -105,6 +146,7 @@ InstallAndRegisterInterruptService (
   Status = gBS->InstallMultipleProtocolInterfaces (
                   &gHardwareInterruptHandle,
                   &gHardwareInterruptProtocolGuid, InterruptProtocol,
+                  &gHardwareInterrupt2ProtocolGuid, Interrupt2Protocol,
                   NULL
                   );
   if (EFI_ERROR (Status)) {
