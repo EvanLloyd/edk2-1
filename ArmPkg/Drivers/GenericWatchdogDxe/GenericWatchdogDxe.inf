@@ -47,7 +47,7 @@
 
 [Protocols]
   gEfiWatchdogTimerArchProtocolGuid
-  gHardwareInterruptProtocolGuid
+  gHardwareInterrupt2ProtocolGuid
 
 [Depex]
-  gHardwareInterruptProtocolGuid
+  gHardwareInterrupt2ProtocolGuid
