@@ -193,6 +193,41 @@ EFI_HARDWARE_INTERRUPT_PROTOCOL gHardwareInterruptV2Protocol = {
   GicV2EndOfInterrupt
 };
 
+STATIC
+EFI_STATUS
+EFIAPI
+GicV2GetTriggerType (
+  IN  EFI_HARDWARE_INTERRUPT2_PROTOCOL      *This,
+  IN  HARDWARE_INTERRUPT_SOURCE             Source,
+  OUT EFI_HARDWARE_INTERRUPT2_TRIGGER_TYPE  *TriggerType
+  )
+{
+  return EFI_SUCCESS;
+}
+
+STATIC
+EFI_STATUS
+EFIAPI
+GicV2SetTriggerType (
+  IN  EFI_HARDWARE_INTERRUPT2_PROTOCOL      *This,
+  IN  HARDWARE_INTERRUPT_SOURCE             Source,
+  IN  EFI_HARDWARE_INTERRUPT2_TRIGGER_TYPE  TriggerType
+  )
+{
+  return EFI_SUCCESS;
+}
+
+STATIC EFI_HARDWARE_INTERRUPT2_PROTOCOL gHardwareInterrupt2V2Protocol = {
+  (HARDWARE_INTERRUPT2_REGISTER)RegisterInterruptSource,
+  (HARDWARE_INTERRUPT2_ENABLE)GicV2EnableInterruptSource,
+  (HARDWARE_INTERRUPT2_DISABLE)GicV2DisableInterruptSource,
+  (HARDWARE_INTERRUPT2_INTERRUPT_STATE)GicV2GetInterruptSourceState,
+  (HARDWARE_INTERRUPT2_END_OF_INTERRUPT)GicV2EndOfInterrupt,
+  GicV2GetTriggerType,
+  GicV2SetTriggerType
+};
+
+
 /**
   Shutdown our hardware
 
@@ -311,7 +346,8 @@ GicV2DxeInitialize (
   ArmGicEnableDistributor (mGicDistributorBase);
 
   Status = InstallAndRegisterInterruptService (
-          &gHardwareInterruptV2Protocol, GicV2IrqInterruptHandler, GicV2ExitBootServicesEvent);
+             &gHardwareInterruptV2Protocol, &gHardwareInterrupt2V2Protocol,
+             GicV2IrqInterruptHandler, GicV2ExitBootServicesEvent);
 
   return Status;
 }

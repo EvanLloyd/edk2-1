@@ -24,6 +24,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 #include <Protocol/Cpu.h>
 #include <Protocol/HardwareInterrupt.h>
+#include <Protocol/HardwareInterrupt2.h>
 
 extern UINTN                        mGicNumInterrupts;
 extern HARDWARE_INTERRUPT_HANDLER  *gRegisteredInterruptHandlers;
@@ -34,6 +35,7 @@ extern HARDWARE_INTERRUPT_HANDLER  *gRegisteredInterruptHandlers;
 EFI_STATUS
 InstallAndRegisterInterruptService (
   IN EFI_HARDWARE_INTERRUPT_PROTOCOL   *InterruptProtocol,
+  IN EFI_HARDWARE_INTERRUPT2_PROTOCOL  *Interrupt2Protocol,
   IN EFI_CPU_INTERRUPT_HANDLER          InterruptHandler,
   IN EFI_EVENT_NOTIFY                   ExitBootServicesEvent
   );

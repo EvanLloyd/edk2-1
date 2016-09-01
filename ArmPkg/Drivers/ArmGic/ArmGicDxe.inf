@@ -48,6 +48,7 @@
 
 [Protocols]
   gHardwareInterruptProtocolGuid
+  gHardwareInterrupt2ProtocolGuid
   gEfiCpuArchProtocolGuid
 
 [Pcd.common]

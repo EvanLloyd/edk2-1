@@ -88,6 +88,7 @@ RegisterInterruptSource (
 EFI_STATUS
 InstallAndRegisterInterruptService (
   IN EFI_HARDWARE_INTERRUPT_PROTOCOL   *InterruptProtocol,
+  IN EFI_HARDWARE_INTERRUPT2_PROTOCOL  *Interrupt2Protocol,
   IN EFI_CPU_INTERRUPT_HANDLER          InterruptHandler,
   IN EFI_EVENT_NOTIFY                   ExitBootServicesEvent
   )
@@ -104,6 +105,7 @@ InstallAndRegisterInterruptService (
   Status = gBS->InstallMultipleProtocolInterfaces (
                   &gHardwareInterruptHandle,
                   &gHardwareInterruptProtocolGuid, InterruptProtocol,
+                  &gHardwareInterrupt2ProtocolGuid, Interrupt2Protocol,
                   NULL
                   );
   if (EFI_ERROR (Status)) {
