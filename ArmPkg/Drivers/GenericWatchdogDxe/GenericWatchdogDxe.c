@@ -1,6 +1,6 @@
 /** @file
 *
-*  Copyright (c) 2013-2014, ARM Limited. All rights reserved.
+*  Copyright (c) 2013-2017, ARM Limited. All rights reserved.
 *
 *  This program and the accompanying materials
 *  are licensed and made available under the terms and conditions of the BSD
@@ -24,8 +24,8 @@
 #include <Library/UefiLib.h>
 #include <Library/ArmGenericTimerCounterLib.h>
 
+#include <Protocol/HardwareInterrupt2.h>
 #include <Protocol/WatchdogTimer.h>
-#include <Protocol/HardwareInterrupt.h>
 
 #include "GenericWatchdog.h"
 
@@ -41,7 +41,7 @@ UINTN mTimerFrequencyHz = 0;
 // It is therefore stored here. 0 means the timer is not running.
 UINT64 mNumTimerTicks = 0;
 
-EFI_HARDWARE_INTERRUPT_PROTOCOL *mInterruptProtocol;
+EFI_HARDWARE_INTERRUPT2_PROTOCOL *mInterruptProtocol;
 
 EFI_STATUS
 WatchdogWriteOffsetRegister (
@@ -320,7 +320,7 @@ GenericWatchdogEntry (
   if (!EFI_ERROR (Status)) {
     // Install interrupt handler
     Status = gBS->LocateProtocol (
-                    &gHardwareInterruptProtocolGuid,
+                    &gHardwareInterrupt2ProtocolGuid,
                     NULL,
                     (VOID **)&mInterruptProtocol
                     );
@@ -331,13 +331,19 @@ GenericWatchdogEntry (
                                     WatchdogInterruptHandler
                                     );
       if (!EFI_ERROR (Status)) {
-        // Install the Timer Architectural Protocol onto a new handle
-        Handle = NULL;
-        Status = gBS->InstallMultipleProtocolInterfaces (
-                        &Handle,
-                        &gEfiWatchdogTimerArchProtocolGuid, &gWatchdogTimer,
-                        NULL
-                        );
+        Status = mInterruptProtocol->SetTriggerType (
+                                    mInterruptProtocol,
+                                    FixedPcdGet32 (PcdGenericWatchdogEl2IntrNum),
+                                    EFI_HARDWARE_INTERRUPT2_TRIGGER_EDGE_RISING);
+        if (!EFI_ERROR (Status)) {
+          // Install the Timer Architectural Protocol onto a new handle
+          Handle = NULL;
+          Status = gBS->InstallMultipleProtocolInterfaces (
+                          &Handle,
+                          &gEfiWatchdogTimerArchProtocolGuid, &gWatchdogTimer,
+                          NULL
+                          );
+        }
       }
     }
   }
