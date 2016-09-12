@@ -51,6 +51,10 @@
 #define ARM_GIC_ICDDCR_ARE      (1 << 4) // Affinity Routing Enable (ARE)
 #define ARM_GIC_ICDDCR_DS       (1 << 6) // Disable Security (DS)
 
+// GICD_ICDICFR bits
+#define ARM_GIC_ICDICFR_LEVEL_TRIGGERED  0x0 // Level triggered interrupt
+#define ARM_GIC_ICDICFR_EDGE_TRIGGERED   0x1 // Edge triggered interrupt
+
 //
 // GIC Redistributor
 //
