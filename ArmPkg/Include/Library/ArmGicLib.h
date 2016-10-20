@@ -55,11 +55,24 @@
 // GIC Redistributor
 //
 
-#define ARM_GICR_CTLR_FRAME_SIZE    SIZE_64KB
-#define ARM_GICR_SGI_PPI_FRAME_SIZE SIZE_64KB
+#define ARM_GICR_CTLR_FRAME_SIZE         SIZE_64KB
+#define ARM_GICR_SGI_PPI_FRAME_SIZE      SIZE_64KB
+#define ARM_GICR_SGI_VLPI_FRAME_SIZE     SIZE_64KB
+#define ARM_GICR_SGI_RESERVED_FRAME_SIZE SIZE_64KB
 
 // GIC Redistributor Control frame
 #define ARM_GICR_TYPER          0x0008  // Redistributor Type Register
+
+// GIC Redistributor TYPER bit assignments
+#define ARM_GICR_TYPER_PLPIS        (1 << 0)    // Physical LPIs
+#define ARM_GICR_TYPER_VLPIS        (1 << 1)    // Virtual LPIs
+#define ARM_GICR_TYPER_DIRECTLPI    (1 << 3)    // Direct LPIs
+#define ARM_GICR_TYPER_LAST         (1 << 4)    // Last Redistributor in series
+#define ARM_GICR_TYPER_DPGS         (1 << 5)    // Disable Processor Group
+                                                // Selection Support
+#define ARM_GICR_TYPER_PROCNO       (0xFFFF << 8)      // Processor Number
+#define ARM_GICR_TYPER_COMMONLPIAFF (0x3 << 24)        // Common LPI Affinity
+#define ARM_GICR_TYPER_AFFINITY     (0xFFFFFFFF << 32) // Redistributor Affinity
 
 // GIC SGI & PPI Redistributor frame
 #define ARM_GICR_ISENABLER      0x0100  // Interrupt Set-Enable Registers
