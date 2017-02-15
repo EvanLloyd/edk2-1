@@ -193,18 +193,18 @@ WatchdogSetTimerPeriod (
   // Work out how many timer ticks will equate to TimerPeriod
   mNumTimerTicks = (mTimerFrequencyHz * TimerPeriod) / TIME_UNITS_PER_SECOND;
 
-  //
+
   // If the number of required ticks is greater than the max number the
   // watchdog's offset register (WOR) can hold, we need to manually compute and
   // set the compare register (WCV)
-  //
+
   if (mNumTimerTicks > MAX_UINT32) {
-    //
+
     // We need to enable the watchdog *before* writing to the compare register,
     // because enabling the watchdog causes an "explicit refresh", which
     // clobbers the compare register (WCV). In order to make sure this doesn't
     // trigger an interrupt, set the offset to max.
-    //
+
     Status = WatchdogWriteOffsetRegister (MAX_UINT32);
     if (EFI_ERROR (Status)) {
       return Status;
@@ -302,11 +302,11 @@ GenericWatchdogEntry (
   EFI_STATUS                      Status;
   EFI_HANDLE                      Handle;
 
-  //
+
   // Make sure the Watchdog Timer Architectural Protocol has not been installed
   // in the system yet.
   // This will avoid conflicts with the universal watchdog
-  //
+
   ASSERT_PROTOCOL_ALREADY_INSTALLED (NULL, &gEfiWatchdogTimerArchProtocolGuid);
 
   mTimerFrequencyHz = ArmGenericTimerGetTimerFreq ();
