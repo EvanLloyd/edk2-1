@@ -1,6 +1,6 @@
 /** @file
 *
-*  Copyright (c) 2011-2016, ARM Limited. All rights reserved.
+*  Copyright (c) 2011-2017, ARM Limited. All rights reserved.
 *
 *  This program and the accompanying materials
 *  are licensed and made available under the terms and conditions of the BSD License
@@ -20,8 +20,10 @@
 #include <Library/MemoryAllocationLib.h>
 #include <ArmPlatform.h>
 
+#define FRAME_BUFFER_DESCRIPTOR ((FixedPcdGet64 (PcdArmLcdDdrFrameBufferBase) != 0) ? 1 : 0)
+
 // Number of Virtual Memory Map Descriptors
-#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS          9
+#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS (9 + FRAME_BUFFER_DESCRIPTOR)
 
 // DDR attributes
 #define DDR_ATTRIBUTES_CACHED   ARM_MEMORY_REGION_ATTRIBUTE_WRITE_BACK
@@ -141,6 +143,21 @@ ArmPlatformGetVirtualMemoryMap (
   // here, but it maps to a memory type that allows buffering and reordering.
   //
   VirtualMemoryTable[Index].Attributes = ARM_MEMORY_REGION_ATTRIBUTE_UNCACHED_UNBUFFERED;
+
+  // Map region for the frame buffer in the system RAM
+#if (FixedPcdGet32 (PcdArmLcdDdrFrameBufferSize) != 0)
+  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdArmLcdDdrFrameBufferBase);
+  VirtualMemoryTable[Index].VirtualBase = FixedPcdGet64 (PcdArmLcdDdrFrameBufferBase);
+  VirtualMemoryTable[Index].Length = FixedPcdGet32 (PcdArmLcdDdrFrameBufferSize);
+  /* Map as Normal Non-Cacheable memory, so that we can use the accelerated
+   * SetMem/CopyMem routines that may use unaligned accesses or
+   * DC ZVA instructions. If mapped as device memory, these routine may cause
+   * alignment faults.
+   * NOTE: The attribute value is misleading, it indicates memory map type as
+   * an un-cached, un-buffered but allows buffering and reordering.
+   */
+  VirtualMemoryTable[Index].Attributes = ARM_MEMORY_REGION_ATTRIBUTE_UNCACHED_UNBUFFERED;
+#endif
 
   // Map sparse memory region if present
   if (HasSparseMemory) {
