@@ -1,0 +1,54 @@
+## @file
+#
+#  Copyright (c) 2017, ARM Limited. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+##
+
+[Defines]
+  INF_VERSION    = 0x00010019
+  BASE_NAME      = XsdtParserLib
+  FILE_GUID      = A57ED7A2-4CD6-4239-9A4D-F7F0DBDCFCFA
+  VERSION_STRING = 1.0
+  MODULE_TYPE    = DXE_DRIVER
+  LIBRARY_CLASS  = NULL|DXE_DRIVER
+  CONSTRUCTOR    = XsdtParserLibConstructor
+  DESTRUCTOR     = XsdtParserLibDestructor
+
+[Sources]
+  XsdtParser.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  MemoryAllocationLib
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  ShellCommandLib
+  ShellLib
+  UefiLib
+  UefiRuntimeServicesTableLib
+  UefiBootServicesTableLib
+  PcdLib
+  HiiLib
+  PrintLib
+  FileHandleLib
+  UefiShellAcpiViewCommandLib
+
+[FixedPcd]
+
+[Protocols]
+
+[Guids]
+
+
