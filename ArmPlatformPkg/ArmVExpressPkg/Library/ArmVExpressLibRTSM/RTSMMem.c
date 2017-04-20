@@ -21,9 +21,10 @@
 #include <ArmPlatform.h>
 
 #define FRAME_BUFFER_DESCRIPTOR ((FixedPcdGet64 (PcdArmLcdDdrFrameBufferBase) != 0) ? 1 : 0)
+#define DP_BASE_DESCRIPTOR      ((FixedPcdGet64 (PcdArmMaliDpBase) != 0) ? 1 : 0)
 
 // Number of Virtual Memory Map Descriptors
-#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS (9 + FRAME_BUFFER_DESCRIPTOR)
+#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS (9 + FRAME_BUFFER_DESCRIPTOR + DP_BASE_DESCRIPTOR)
 
 // DDR attributes
 #define DDR_ATTRIBUTES_CACHED   ARM_MEMORY_REGION_ATTRIBUTE_WRITE_BACK
@@ -159,6 +160,13 @@ ArmPlatformGetVirtualMemoryMap (
   VirtualMemoryTable[Index].Attributes = ARM_MEMORY_REGION_ATTRIBUTE_UNCACHED_UNBUFFERED;
 #endif
 
+#if (FixedPcdGet64 (PcdArmMaliDpBase) != 0)
+  // DP500/DP550/DP650 peripheral memory region
+  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdArmMaliDpBase);
+  VirtualMemoryTable[Index].VirtualBase = FixedPcdGet64 (PcdArmMaliDpBase);
+  VirtualMemoryTable[Index].Length = FixedPcdGet32 (PcdArmMaliDpMemoryRegionLength);
+  VirtualMemoryTable[Index].Attributes = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
+#endif
   // Map sparse memory region if present
   if (HasSparseMemory) {
     VirtualMemoryTable[++Index].PhysicalBase = SparseMemoryBase;

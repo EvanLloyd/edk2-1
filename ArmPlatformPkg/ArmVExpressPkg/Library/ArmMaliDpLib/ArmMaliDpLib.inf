@@ -1,0 +1,45 @@
+#/** @file ArmMaliDpLib.inf
+#
+#  Component description file for ArmMaliDpLib module
+#
+#  Copyright (c) 2017, ARM Limited. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = ArmMaliDpLib
+  FILE_GUID                      = 36C47FED-2F3F-49C7-89CE-31B13F0431D8
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = LcdPlatformLib
+
+[Sources.common]
+  ArmMaliDpLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  ArmPlatformPkg/ArmVExpressPkg/ArmVExpressPkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DxeServicesTableLib
+
+[FixedPcd.common]
+  gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferBase
+  gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferSize
+  gArmPlatformTokenSpaceGuid.PcdGopPixelFormat
+
+  # MaxMode must be one number higher than the actual max mode,
+  # i.e. for actual maximum mode 2, set the value to 3.
+  # See Section 11.9 of the UEFI Specification 2.6 Errata A (Jan 2017)
+  gArmVExpressTokenSpaceGuid.PcdArmMaliDpMaxMode
+
