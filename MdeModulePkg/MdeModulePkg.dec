@@ -7,6 +7,7 @@
 # Copyright (c) 2016, Linaro Ltd. All rights reserved.<BR>
 # (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
 # Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+# Copyright (c) 2017, ARM Limited. All rights reserved.<BR>
 #
 # This program and the accompanying materials are licensed and made available under
 # the terms and conditions of the BSD License that accompanies this distribution.
@@ -556,6 +557,12 @@
   ## Include/Protocol/IoMmu.h
   gEdkiiIoMmuProtocolGuid = { 0x4e939de9, 0xd948, 0x4b0f, { 0x88, 0xed, 0xe6, 0xe1, 0xce, 0x51, 0x7c, 0x1e } }
 
+  # Configuration Manager Protocol GUID
+  gEfiConfigurationManagerProtocolGuid = { 0xd85a4835, 0x5a82, 0x4894, { 0xac, 0x2, 0x70, 0x6f, 0x43, 0xd5, 0x97, 0x8e } }
+
+  # Dynamic Table Factory Protocol GUID
+  gEfiDynamicTableFactoryProtocolGuid = { 0x91d1e327, 0xfe5a, 0x49b8, { 0xab, 0x65, 0xe, 0xce, 0x2d, 0xdb, 0x45, 0xec } }
+
 #
 # [Error.gEfiMdeModulePkgTokenSpaceGuid]
 #   0x80000001 | Invalid value provided.
@@ -866,6 +873,12 @@
   # @Prompt Error Code for SetVariable failure.
   # @ValidList  0x80000006 | 0x03058002
   gEfiMdeModulePkgTokenSpaceGuid.PcdErrorCodeSetVariable|0x03058002|UINT32|0x30001040
+
+  # Maximum number of Custom ACPI Generators
+  gEfiMdeModulePkgTokenSpaceGuid.PcdMaxCustomACPIGenerators|1|UINT16|0xC0000001
+
+  # Maximum number of Custom SMBIOS Generators
+  gEfiMdeModulePkgTokenSpaceGuid.PcdMaxCustomSMBIOSGenerators|1|UINT16|0xC0000002
 
 [PcdsFixedAtBuild, PcdsPatchableInModule]
   ## Dynamic type PCD can be registered callback function for Pcd setting action.
