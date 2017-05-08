@@ -1,8 +1,8 @@
-#/** @file
+#/** @file HdLcdArmVExpress.inf
 #
-#  Component description file for HdLcdArmLib module
+#  Component description file for HdLcdArmVExpress module
 #
-#  Copyright (c) 2011-2012, ARM Ltd. All rights reserved.<BR>
+#  Copyright (c) 2011-2017, ARM Ltd. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -23,8 +23,7 @@
   LIBRARY_CLASS                  = LcdPlatformLib
 
 [Sources.common]
-
-HdLcdArmVExpress.c
+  HdLcdArmVExpress.c
 
 [Packages]
   MdePkg/MdePkg.dec

@@ -1,6 +1,6 @@
-/** @file
+/** @file LcdPlatformLib.h
 
- Copyright (c) 2011, ARM Ltd. All rights reserved.<BR>
+ Copyright (c) 2011-2017, ARM Ltd. All rights reserved.<BR>
  This program and the accompanying materials
  are licensed and made available under the terms and conditions of the BSD License
  which accompanies this distribution.  The full text of the license may be found at
@@ -11,8 +11,8 @@
 
  **/
 
-#ifndef __LCDPLATFORMLIB_H
-#define __LCDPLATFORMLIB_H
+#ifndef LCD_PLATFORM_LIB_H_
+#define LCD_PLATFORM_LIB_H_
 
 #include <Protocol/GraphicsOutput.h>
 
@@ -218,4 +218,4 @@ LcdPlatformGetBpp (
   OUT LCD_BPP*                              Bpp
   );
 
-#endif
+#endif // LCD_PLATFORM_LIB_H_
