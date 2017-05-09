@@ -1,6 +1,6 @@
-#/** @file PL111LcdGraphicsOutputDxe.inf
+#/** @file PL111Lcd.inf
 #
-#  Component description file for PL111LcdGraphicsOutputDxe module
+#  Component description file for PL111Lcd module
 #
 #  Copyright (c) 2011-2017, ARM Ltd. All rights reserved.<BR>
 #  This program and the accompanying materials
@@ -15,15 +15,13 @@
 
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = PL111LcdGraphicsDxe
+  BASE_NAME                      = PL111Lcd
   FILE_GUID                      = 407B4008-BF5B-11DF-9547-CF16E0D72085
-  MODULE_TYPE                    = DXE_DRIVER
+  MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.0
-  ENTRY_POINT                    = LcdGraphicsOutputDxeInitialize
+  LIBRARY_CLASS                  = LcdHwLib
 
 [Sources.common]
-  LcdGraphicsOutputDxe.c
-  LcdGraphicsOutputBlt.c
   PL111Lcd.c
 
 [Packages]
@@ -34,26 +32,10 @@
   ArmPlatformPkg/ArmPlatformPkg.dec
 
 [LibraryClasses]
-  ArmLib
   UefiLib
   BaseLib
   DebugLib
-  TimerLib
-  UefiDriverEntryPoint
-  UefiBootServicesTableLib
   IoLib
-  BaseMemoryLib
-  LcdPlatformLib
-
-[Protocols]
-  gEfiDevicePathProtocolGuid
-  gEfiGraphicsOutputProtocolGuid
 
 [FixedPcd]
   gArmPlatformTokenSpaceGuid.PcdPL111LcdBase
-
-[FeaturePcd]
-  gArmPlatformTokenSpaceGuid.PcdGopDisableOnExitBootServices
-
-[Depex]
-  gEfiCpuArchProtocolGuid

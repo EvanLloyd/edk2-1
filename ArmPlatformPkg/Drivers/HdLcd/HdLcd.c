@@ -19,8 +19,7 @@
 #include <Library/PcdLib.h>
 
 #include <Drivers/HdLcd.h>
-
-#include "LcdGraphicsOutputDxe.h"
+#include <Drivers/LcdHw.h>
 
 #define BYTES_PER_PIXEL 4
 

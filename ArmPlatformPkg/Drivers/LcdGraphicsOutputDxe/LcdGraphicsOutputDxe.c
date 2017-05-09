@@ -20,6 +20,8 @@
 
 #include <Guid/GlobalVariable.h>
 
+#include <Drivers/LcdHw.h>
+
 #include "LcdGraphicsOutputDxe.h"
 
 /**********************************************************************

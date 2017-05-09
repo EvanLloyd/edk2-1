@@ -14,6 +14,7 @@
 #ifndef LCD_PLATFORM_LIB_H_
 #define LCD_PLATFORM_LIB_H_
 
+#include <Uefi/UefiBaseType.h>
 #include <Protocol/GraphicsOutput.h>
 
 #define LCD_VRAM_SIZE                     SIZE_8MB

@@ -19,7 +19,6 @@
 
 #include <Library/DebugLib.h>
 #include <Library/LcdPlatformLib.h>
-#include <Library/PcdLib.h>
 #include <Library/UefiLib.h>
 
 #include <Protocol/DevicePath.h>
@@ -92,7 +91,6 @@ UINTN
 GetBytesPerPixel (
   IN  LCD_BPP       Bpp
   );
-
 EFI_STATUS
 EFIAPI
 GraphicsOutputDxeInitialize (
@@ -105,23 +103,4 @@ InitializeDisplay (
   IN LCD_INSTANCE* Instance
 );
 
-EFI_STATUS
-LcdIdentify (
-  VOID
-);
-
-EFI_STATUS
-LcdInitialize (
-  EFI_PHYSICAL_ADDRESS  VramBaseAddress
-);
-
-EFI_STATUS
-LcdSetMode (
-  IN UINT32  ModeNumber
-);
-
-VOID
-LcdShutdown (
-  VOID
-);
 #endif /* LCD_GRAPHICS_OUTPUT_DXE_H_ */
