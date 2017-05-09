@@ -18,9 +18,7 @@
 
 #define LCD_VRAM_SIZE                     SIZE_8MB
 
-//
 // Modes definitions
-//
 #define VGA                               0
 #define SVGA                              1
 #define XGA                               2
@@ -29,9 +27,7 @@
 #define UXGA                              5
 #define HD                                6
 
-//
 // VGA Mode: 640 x 480
-//
 #define VGA_H_RES_PIXELS                  640
 #define VGA_V_RES_PIXELS                  480
 #define VGA_OSC_FREQUENCY                 23750000  /* 0x016A6570 */
@@ -44,9 +40,7 @@
 #define VGA_V_FRONT_PORCH                 (  3 - 1)
 #define VGA_V_BACK_PORCH                  ( 13 - 1)
 
-//
 // SVGA Mode: 800 x 600
-//
 #define SVGA_H_RES_PIXELS                 800
 #define SVGA_V_RES_PIXELS                 600
 #define SVGA_OSC_FREQUENCY                38250000  /* 0x0247A610 */
@@ -59,9 +53,7 @@
 #define SVGA_V_FRONT_PORCH                (  3 - 1)
 #define SVGA_V_BACK_PORCH                 ( 17 - 1)
 
-//
 // XGA Mode: 1024 x 768
-//
 #define XGA_H_RES_PIXELS                  1024
 #define XGA_V_RES_PIXELS                  768
 #define XGA_OSC_FREQUENCY                 63500000  /* 0x03C8EEE0 */
@@ -74,9 +66,7 @@
 #define XGA_V_FRONT_PORCH                 (  3 - 1)
 #define XGA_V_BACK_PORCH                  ( 23 - 1)
 
-//
 // SXGA Mode: 1280 x 1024
-//
 #define SXGA_H_RES_PIXELS                 1280
 #define SXGA_V_RES_PIXELS                 1024
 #define SXGA_OSC_FREQUENCY                109000000  /* 0x067F3540 */
@@ -89,9 +79,7 @@
 #define SXGA_V_FRONT_PORCH                (  3 - 1)
 #define SXGA_V_BACK_PORCH                 ( 29 - 1)
 
-//
 // WSXGA+ Mode: 1680 x 1050
-//
 #define WSXGA_H_RES_PIXELS                1680
 #define WSXGA_V_RES_PIXELS                1050
 #define WSXGA_OSC_FREQUENCY               147000000  /* 0x08C30AC0 */
@@ -104,9 +92,7 @@
 #define WSXGA_V_FRONT_PORCH               (  4 - 1)
 #define WSXGA_V_BACK_PORCH                ( 41 - 1)
 
-//
 // UXGA Mode: 1600 x 1200
-//
 #define UXGA_H_RES_PIXELS                 1600
 #define UXGA_V_RES_PIXELS                 1200
 #define UXGA_OSC_FREQUENCY                161000000  /* 0x0998AA40 */
@@ -119,9 +105,7 @@
 #define UXGA_V_FRONT_PORCH                (  3 - 1)
 #define UXGA_V_BACK_PORCH                 ( 38 - 1)
 
-//
 // HD Mode: 1920 x 1080
-//
 #define HD_H_RES_PIXELS                   1920
 #define HD_V_RES_PIXELS                   1080
 #define HD_OSC_FREQUENCY                  165000000  /* 0x09D5B340 */
@@ -134,10 +118,7 @@
 #define HD_V_FRONT_PORCH                  (  3 - 1)
 #define HD_V_BACK_PORCH                   ( 32 - 1)
 
-//
 // Colour Masks
-//
-
 #define LCD_24BPP_RED_MASK              0x00FF0000
 #define LCD_24BPP_GREEN_MASK            0x0000FF00
 #define LCD_24BPP_BLUE_MASK             0x000000FF
@@ -171,34 +152,85 @@ typedef enum {
   LCD_BITS_PER_PIXEL_12_444
 } LCD_BPP;
 
-
+/** Platform related initialization function.
+  *
+  * @param IN Handle               Handle to the LCD device instance.
+  *
+  * @retval EFI_SUCCESS            Platform initialization success.
+  * @retval !(EFI_SUCCESS)         Other errors.
+**/
 EFI_STATUS
 LcdPlatformInitializeDisplay (
   IN EFI_HANDLE   Handle
   );
 
+/** Reserve VRAM memory in DRAM for the frame buffer
+  * (unless it is reserved already).
+  *
+  * The allocated address can be used to set the frame buffer.
+  * @param OUT VramBaseAddress      A pointer to the frame buffer address.
+  * @param OUT VramSize             A pointer to the size of the frame
+  *                                 buffer in bytes
+  *
+  * @retval EFI_SUCCESS             Frame buffer memory allocation success.
+  * @retval !(EFI_SUCCESS)          Other errors.
+**/
 EFI_STATUS
 LcdPlatformGetVram (
   OUT EFI_PHYSICAL_ADDRESS*                 VramBaseAddress,
   OUT UINTN*                                VramSize
   );
 
+/** Return total number of modes.
+  *
+  * @retval UINT32             Mode Number.
+**/
 UINT32
 LcdPlatformGetMaxMode (
   VOID
   );
 
+/** Set the requested display mode.
+  *
+  * @param IN ModeNumber             Mode Number.
+  * @retval   EFI_SUCCESS            Set mode success.
+  * @retval   EFI_INVALID_PARAMTER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformSetMode (
   IN UINT32                                 ModeNumber
   );
 
+/** Return information for the requested mode number.
+  *
+  * @param IN ModeNumber            Mode Number.
+  * @param OUT Info                 Pointer for returned mode information
+  *                                 (on success).
+  *
+  * @retval EFI_SUCCESS             Success if the requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformQueryMode (
   IN  UINT32                                ModeNumber,
   OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION  *Info
   );
 
+/** Returns the display timing information for the requested mode number.
+  *
+  * @param IN  ModeNumber           Mode Number.
+  * @param OUT HRes                 Pointer to horizontal resolution.
+  * @param OUT HSync                Pointer to horizontal sync width.
+  * @param OUT HBackPorch           Pointer to horizontal back porch.
+  * @param OUT HFrontPorch          Pointer to horizontal front porch.
+  * @param OUT VRes                 Pointer to vertical resolution.
+  * @param OUT VSync                Pointer to vertical sync width.
+  * @param OUT VBackPorch           Pointer to vertical back porch.
+  * @param OUT VFrontPorch          Pointer to vertical front porch.
+
+  * @retval EFI_SUCCESS             Success if the requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformGetTimings (
   IN  UINT32                              ModeNumber,
@@ -212,6 +244,14 @@ LcdPlatformGetTimings (
   OUT UINT32*                             VFrontPorch
   );
 
+/** Return bits per pixel information for a mode number.
+  *
+  * @param IN  ModeNumber           Mode Number.
+  * @param OUT Bpp                  Pointer to value Bytes Per Pixel.
+  *
+  * @retval EFI_SUCCESS             The requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformGetBpp (
   IN  UINT32                                ModeNumber,

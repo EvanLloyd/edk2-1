@@ -26,6 +26,12 @@
  *
  **********************************************************************/
 
+/** Check for presence of PL111.
+  *
+  * @retval EFI_SUCCESS            Platform implements PL111.
+  * @retval EFI_NOT_FOUND          PL111 display controller not
+  *                                found.
+**/
 EFI_STATUS
 LcdIdentify (
   VOID
@@ -48,6 +54,12 @@ LcdIdentify (
   return EFI_NOT_FOUND;
 }
 
+/** Initialize display.
+  *
+  * @param  VramBaseAddress        Address of the frame buffer.
+  *
+  * @retval EFI_SUCCESS            Display initialization success.
+**/
 EFI_STATUS
 LcdInitialize (
   IN EFI_PHYSICAL_ADDRESS   VramBaseAddress
@@ -63,6 +75,12 @@ LcdInitialize (
   return EFI_SUCCESS;
 }
 
+/** Set requested mode of the display.
+  *
+  * @param  ModeNumber             Display mode number.
+  * @retval EFI_SUCCESS            Display set mode success.
+  * @retval EFI_DEVICE_ERROR       If mode not found/supported.
+**/
 EFI_STATUS
 LcdSetMode (
   IN UINT32  ModeNumber
@@ -123,7 +141,7 @@ LcdSetMode (
 
   // PL111_REG_LCD_CONTROL
   LcdControl = PL111_CTRL_LCD_EN | PL111_CTRL_LCD_BPP (LcdBpp)
-                 | PL111_CTRL_LCD_TFT | PL111_CTRL_BGR;
+               | PL111_CTRL_LCD_TFT | PL111_CTRL_BGR;
 
   MmioWrite32 (PL111_REG_LCD_CONTROL, LcdControl);
 
@@ -134,6 +152,8 @@ LcdSetMode (
   return EFI_SUCCESS;
 }
 
+/** De-initializes the display.
+*/
 VOID
 LcdShutdown (
   VOID

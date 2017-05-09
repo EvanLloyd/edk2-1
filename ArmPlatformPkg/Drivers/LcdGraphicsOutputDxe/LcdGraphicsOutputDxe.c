@@ -357,8 +357,8 @@ LcdGraphicsSetMode (
     goto EXIT;
   }
 
-  // The UEFI spec requires that we now clear the visible portions of the
-  // output display to black.
+  /* The UEFI spec requires that we now clear the visible portions of the
+   * output display to black. */
 
   // Set the fill colour to black
   SetMem (&FillColour, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL), 0x0);

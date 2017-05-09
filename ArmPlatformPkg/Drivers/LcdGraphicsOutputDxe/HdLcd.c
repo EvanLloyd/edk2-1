@@ -29,6 +29,12 @@
  *
  **********************************************************************/
 
+/** Initialize display.
+  *
+  * @param  VramBaseAddress        Address of the frame buffer.
+  *
+  * @retval EFI_SUCCESS            Display initialization success.
+**/
 EFI_STATUS
 LcdInitialize (
   IN EFI_PHYSICAL_ADDRESS   VramBaseAddress
@@ -67,6 +73,12 @@ LcdInitialize (
   return EFI_SUCCESS;
 }
 
+/** Set requested mode of the display.
+  *
+  * @param  ModeNumber             Display mode number.
+  * @retval EFI_SUCCESS            Display set mode success.
+  * @retval EFI_DEVICE_ERROR       If mode not found/supported.
+**/
 EFI_STATUS
 LcdSetMode (
   IN UINT32  ModeNumber
@@ -136,6 +148,8 @@ LcdSetMode (
   return EFI_SUCCESS;
 }
 
+/** De-initializes the display.
+**/
 VOID
 LcdShutdown (
   VOID
@@ -145,6 +159,12 @@ LcdShutdown (
   MmioWrite32 (HDLCD_REG_COMMAND, HDLCD_DISABLE);
 }
 
+/** Check for presence of HDLCD.
+  *
+  * @retval EFI_SUCCESS            Platform implements HDLCD.
+  * @retval EFI_NOT_FOUND          HDLCD display controller not
+  *                                found.
+**/
 EFI_STATUS
 LcdIdentify (
   VOID

@@ -41,7 +41,8 @@ typedef struct {
   UINT32                     VFrontPorch;
 } LCD_RESOLUTION;
 
-
+/** The display modes supported by the platform.
+**/
 LCD_RESOLUTION mResolutions[] = {
   {   // Mode 0 : VGA : 640 x 480 x 24 bpp
       VGA, VGA_H_RES_PIXELS, VGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
@@ -151,7 +152,11 @@ EFI_EDID_ACTIVE_PROTOCOL      mEdidActive = {
   NULL
 };
 
-
+/** PL111 Platform specific initialization function.
+  *
+  * @retval EFI_SUCCESS            Plaform library initialization success.
+  * @retval !(EFI_SUCCESS)         Other errors.
+**/
 EFI_STATUS
 LcdPlatformInitializeDisplay (
   IN EFI_HANDLE   Handle
@@ -176,6 +181,18 @@ LcdPlatformInitializeDisplay (
   return Status;
 }
 
+/** Reserve VRAM memory in DRAM for the frame buffer
+  * (unless it is reserved already).
+  *
+  * The allocated address can be used to set the frame buffer.
+  *
+  * @param OUT VramBaseAddress      A pointer to the frame buffer address.
+  * @param OUT VramSize             A pointer to the size of the frame
+  *                                 buffer in bytes
+  *
+  * @retval EFI_SUCCESS             Frame buffer memory allocation success.
+  * @retval !(EFI_SUCCESS)          Other errors.
+**/
 EFI_STATUS
 LcdPlatformGetVram (
   OUT EFI_PHYSICAL_ADDRESS*  VramBaseAddress,
@@ -232,6 +249,13 @@ LcdPlatformGetVram (
   return Status;
 }
 
+/** Return total number of modes supported.
+  *
+  * Note: Valid mode numbers are 0 to MaxMode - 1
+  * See Section 11.9 of the UEFI Specification 2.6 Errata A (Jan 2017)
+  *
+  * @retval UINT32             Mode Number.
+**/
 UINT32
 LcdPlatformGetMaxMode(VOID)
 {
@@ -249,6 +273,14 @@ LcdPlatformGetMaxMode(VOID)
   return (PcdGet32 (PcdPL111LcdMaxMode));
 }
 
+/** Set the requested display mode.
+  *
+  * @param IN ModeNumber            Mode Number.
+  *
+  * @retval  EFI_INVALID_PARAMETER  Requested mode not found.
+  * @retval  EFI_UNSUPPORTED        PLL111 configuration not supported.
+  * @retval  !(EFI_SUCCESS)         Other errors.
+**/
 EFI_STATUS
 LcdPlatformSetMode (
   IN UINT32                         ModeNumber
@@ -320,6 +352,15 @@ LcdPlatformSetMode (
   return Status;
 }
 
+/** Return information for the requested mode number.
+  *
+  * @param IN ModeNumber            Mode Number.
+  * @param OUT Info                 Pointer for returned mode information
+  *                                 (on success).
+  *
+  * @retval EFI_SUCCESS             Success if the requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformQueryMode (
   IN  UINT32                                ModeNumber,
@@ -360,6 +401,21 @@ LcdPlatformQueryMode (
   return EFI_SUCCESS;
 }
 
+/** Returns the display timing information for the requested mode number.
+  *
+  * @param IN  ModeNumber           Mode Number.
+  * @param OUT HRes                 Pointer to horizontal resolution.
+  * @param OUT HSync                Pointer to horizontal sync width.
+  * @param OUT HBackPorch           Pointer to horizontal back porch.
+  * @param OUT HFrontPorch          Pointer to horizontal front porch.
+  * @param OUT VRes                 Pointer to vertical resolution.
+  * @param OUT VSync                Pointer to vertical sync width.
+  * @param OUT VBackPorch           Pointer to vertical back porch.
+  * @param OUT VFrontPorch          Pointer to vertical front porch.
+  *
+  * @retval EFI_SUCCESS             Success if the requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformGetTimings (
   IN  UINT32                              ModeNumber,
@@ -389,6 +445,14 @@ LcdPlatformGetTimings (
   return EFI_SUCCESS;
 }
 
+/** Return bits per pixel for a mode number.
+  *
+  * @param IN  ModeNumber           Mode Number.
+  * @param OUT Bpp                  Pointer to value Bits Per Pixel.
+  *
+  * @retval EFI_SUCCESS             The requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+**/
 EFI_STATUS
 LcdPlatformGetBpp (
   IN  UINT32                              ModeNumber,
