@@ -139,7 +139,6 @@
 #define LCD_12BPP_444_BLUE_MASK         0x0000000F
 #define LCD_12BPP_444_RESERVED_MASK     0x0000F000
 
-
 // The enumeration indexes maps the PL111 LcdBpp values used in the LCD Control Register
 typedef enum {
   LCD_BITS_PER_PIXEL_1 = 0,
@@ -165,6 +164,10 @@ typedef struct {
   * @param IN Handle               Handle to the LCD device instance.
   *
   * @retval EFI_SUCCESS            Platform initialization success.
+  * @retval EFI_UNSUPPORTED        PcdGopPixelFormat must be
+  *                                PixelRedGreenBlueReserved8BitPerColor OR
+  *                                PixelBlueGreenRedReserved8BitPerColor
+  *                                any other format is not supported.
   * @retval !(EFI_SUCCESS)         Other errors.
 **/
 EFI_STATUS
@@ -216,6 +219,7 @@ LcdPlatformSetMode (
   *                                 (on success).
   *
   * @retval EFI_SUCCESS             Success if the requested mode is found.
+  * @retval EFI_INVALID_PARAMETER   Info is NULL.
   * @retval EFI_INVALID_PARAMETER   Requested mode not found.
 **/
 EFI_STATUS
