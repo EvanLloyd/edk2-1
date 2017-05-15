@@ -140,6 +140,7 @@ LcdPlatformInitializeDisplay (
   *                                 buffer in bytes
   *
   * @retval EFI_SUCCESS             Frame buffer memory allocation success.
+  * @retval EFI_INVALID_PARAMETER   VramBaseAddress or VramSize are NULL.
   * @retval !(EFI_SUCCESS)          Other errors.
 **/
 EFI_STATUS
@@ -150,6 +151,13 @@ LcdPlatformGetVram (
 {
   EFI_STATUS              Status;
   EFI_ALLOCATE_TYPE       AllocationType;
+
+  // Check VramBaseAddress and VramSize are not NULL.
+  if (VramBaseAddress == NULL || VramSize == NULL) {
+    ASSERT (VramBaseAddress != NULL);
+    ASSERT (VramSize != NULL);
+    return EFI_INVALID_PARAMETER;
+  }
 
   // Set the vram size
   *VramSize = LCD_VRAM_SIZE;
@@ -169,6 +177,7 @@ LcdPlatformGetVram (
                   VramBaseAddress
                   );
   if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
     return Status;
   }
 
@@ -179,8 +188,8 @@ LcdPlatformGetVram (
                   *VramSize,
                   EFI_MEMORY_WC
                   );
-  ASSERT_EFI_ERROR (Status);
   if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
     gBS->FreePages (*VramBaseAddress, EFI_SIZE_TO_PAGES (*VramSize));
     return Status;
   }
@@ -215,6 +224,7 @@ LcdPlatformSetMode (
   EFI_STATUS            Status;
 
   if (ModeNumber >= LcdPlatformGetMaxMode ()) {
+    ASSERT (ModeNumber < LcdPlatformGetMaxMode ());
     return EFI_INVALID_PARAMETER;
   }
 
@@ -264,6 +274,7 @@ LcdPlatformSetMode (
   *
   * @retval EFI_SUCCESS             Success if the requested mode is found.
   * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+  * @retval EFI_INVALID_PARAMETER   Info is NULL.
 **/
 EFI_STATUS
 LcdPlatformQueryMode (
@@ -271,7 +282,9 @@ LcdPlatformQueryMode (
   OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION * CONST  Info
   )
 {
-  if (ModeNumber >= LcdPlatformGetMaxMode ()) {
+  if (ModeNumber >= LcdPlatformGetMaxMode () || Info == NULL) {
+    ASSERT (ModeNumber < LcdPlatformGetMaxMode ());
+    ASSERT (Info != NULL);
     return EFI_INVALID_PARAMETER;
   }
 
@@ -334,6 +347,28 @@ LcdPlatformGetTimings (
   )
 {
   if (ModeNumber >= LcdPlatformGetMaxMode ()) {
+    ASSERT (ModeNumber < LcdPlatformGetMaxMode ());
+    return EFI_INVALID_PARAMETER;
+  }
+
+  if (HRes == NULL
+    || HSync == NULL
+    || HBackPorch == NULL
+    || HFrontPorch == NULL
+    || VRes == NULL
+    || VSync == NULL
+    || VBackPorch == NULL
+    || VFrontPorch == NULL)
+  {
+    // One of the pointers is NULL
+    ASSERT (HRes != NULL);
+    ASSERT (HSync != NULL);
+    ASSERT (HBackPorch != NULL);
+    ASSERT (HFrontPorch != NULL);
+    ASSERT (VRes != NULL);
+    ASSERT (VSync != NULL);
+    ASSERT (VBackPorch != NULL);
+    ASSERT (VFrontPorch != NULL);
     return EFI_INVALID_PARAMETER;
   }
 
@@ -356,6 +391,7 @@ LcdPlatformGetTimings (
   *
   * @retval EFI_SUCCESS             The requested mode is found.
   * @retval EFI_INVALID_PARAMETER   Requested mode not found.
+  * @retval EFI_INVALID_PARAMETER   Bpp is NULL.
 **/
 EFI_STATUS
 LcdPlatformGetBpp (
@@ -363,7 +399,9 @@ LcdPlatformGetBpp (
   OUT LCD_BPP * CONST                    Bpp
   )
 {
-  if (ModeNumber >= LcdPlatformGetMaxMode ()) {
+  if (ModeNumber >= LcdPlatformGetMaxMode () || Bpp == NULL) {
+    ASSERT (ModeNumber < LcdPlatformGetMaxMode ());
+    ASSERT (Bpp != NULL);
     return EFI_INVALID_PARAMETER;
   }
 
