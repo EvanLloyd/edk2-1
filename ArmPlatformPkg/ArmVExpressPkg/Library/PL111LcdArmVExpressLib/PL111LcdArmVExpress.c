@@ -202,8 +202,6 @@ LcdPlatformGetVram (
 {
   EFI_STATUS              Status;
 
-  Status = EFI_SUCCESS;
-
   // Check VramBaseAddress and VramSize are not NULL.
   if (VramBaseAddress == NULL || VramSize == NULL) {
     ASSERT (VramBaseAddress != NULL);
@@ -217,6 +215,7 @@ LcdPlatformGetVram (
   case ARM_VE_MOTHERBOARD_SITE:
     *VramBaseAddress = (EFI_PHYSICAL_ADDRESS)PL111_CLCD_VRAM_MOTHERBOARD_BASE;
     *VramSize = LCD_VRAM_SIZE;
+    Status = EFI_SUCCESS;
     break;
 
   case ARM_VE_DAUGHTERBOARD_1_SITE:
@@ -245,7 +244,6 @@ LcdPlatformGetVram (
     if (EFI_ERROR (Status)) {
       ASSERT_EFI_ERROR (Status);
       gBS->FreePages (*VramBaseAddress, EFI_SIZE_TO_PAGES (*VramSize));
-      return Status;
     }
     break;
 
@@ -296,7 +294,6 @@ LcdPlatformSetMode (
   )
 {
   EFI_STATUS            Status;
-  UINT32                LcdSite;
   UINT32                OscillatorId;
   SYS_CONFIG_FUNCTION   Function;
   UINT32                SysId;
@@ -306,9 +303,7 @@ LcdPlatformSetMode (
     return EFI_INVALID_PARAMETER;
   }
 
-  LcdSite = PL111_CLCD_SITE;
-
-  switch (LcdSite) {
+  switch (PL111_CLCD_SITE) {
   case ARM_VE_MOTHERBOARD_SITE:
     Function = SYS_CFG_OSC;
     OscillatorId = PL111_CLCD_MOTHERBOARD_VIDEO_MODE_OSC_ID;
@@ -353,7 +348,7 @@ LcdPlatformSetMode (
   }
 
   // Set the multiplexer
-  Status = ArmPlatformSysConfigSet (SYS_CFG_MUXFPGA, LcdSite);
+  Status = ArmPlatformSysConfigSet (SYS_CFG_MUXFPGA, PL111_CLCD_SITE);
   if (EFI_ERROR (Status)) {
     ASSERT_EFI_ERROR (Status);
     return Status;
