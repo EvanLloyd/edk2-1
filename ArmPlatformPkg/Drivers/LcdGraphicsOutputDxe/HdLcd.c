@@ -159,6 +159,22 @@ LcdShutdown (
   MmioWrite32 (HDLCD_REG_COMMAND, HDLCD_DISABLE);
 }
 
+/** Get the HDLCD Product Id (from the version register).
+**/
+STATIC
+UINT32 GetHdlcdProductId(VOID)
+{
+  return ((MmioRead32 (HDLCD_REG_VERSION)) >> 16) ;
+}
+
+/** Check if an HDLCD is present.
+**/
+STATIC
+BOOLEAN HdlcdPresent(VOID)
+{
+  return (GetHdlcdProductId() == HDLCD_PRODUCT_ID);
+}
+
 /** Check for presence of HDLCD.
   *
   * @retval EFI_SUCCESS            Platform implements HDLCD.
@@ -170,5 +186,9 @@ LcdIdentify (
   VOID
   )
 {
-  return EFI_SUCCESS;
+  if (HdlcdPresent()) {
+    return EFI_SUCCESS;
+  }
+
+  return EFI_NOT_FOUND;
 }

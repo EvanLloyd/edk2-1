@@ -1,6 +1,6 @@
 /** @file  HDLcd.h
 
- Copyright (c) 2011-2012, ARM Ltd. All rights reserved.<BR>
+ Copyright (c) 2011-2017, ARM Ltd. All rights reserved.<BR>
 
  This program and the accompanying materials
  are licensed and made available under the terms and conditions of the BSD License
@@ -85,5 +85,7 @@
 
 // Number of bytes per pixel
 #define HDLCD_4BYTES_PER_PIXEL           ((4 - 1) << 3)
+
+#define HDLCD_PRODUCT_ID                 0x1CDC
 
 #endif /* _HDLCD_H_ */
