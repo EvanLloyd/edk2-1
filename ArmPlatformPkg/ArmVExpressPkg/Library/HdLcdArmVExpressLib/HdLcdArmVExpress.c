@@ -230,11 +230,11 @@ LcdPlatformSetMode (
 
   // Set the video mode oscillator
   do {
-    Status = ArmPlatformSysConfigSetDevice (
-               SYS_CFG_OSC_SITE1,
-               PcdGet32 (PcdHdLcdVideoModeOscId),
-               mResolutions[ModeNumber].OscFreq
-               );
+  Status = ArmPlatformSysConfigSetDevice (
+              SYS_CFG_OSC_SITE1,
+              FixedPcdGet32 (PcdHdLcdVideoModeOscId),
+              mResolutions[ModeNumber].OscFreq
+              );
   } while (Status == EFI_TIMEOUT);
   if (EFI_ERROR (Status)) {
     ASSERT_EFI_ERROR (Status);
