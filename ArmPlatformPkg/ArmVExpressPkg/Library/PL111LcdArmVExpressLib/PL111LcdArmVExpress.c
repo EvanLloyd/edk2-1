@@ -28,117 +28,111 @@
 
 typedef struct {
   UINT32                     Mode;
-  UINT32                     HorizontalResolution;
-  UINT32                     VerticalResolution;
   LCD_BPP                    Bpp;
   UINT32                     OscFreq;
 
-  UINT32                     HSync;
-  UINT32                     HBackPorch;
-  UINT32                     HFrontPorch;
-  UINT32                     VSync;
-  UINT32                     VBackPorch;
-  UINT32                     VFrontPorch;
-} LCD_RESOLUTION;
+  SCAN_TIMINGS               Horizontal;
+  SCAN_TIMINGS               Vertical;
+} DISPLAY_MODE;
 
 /** The display modes supported by the platform.
 **/
-STATIC CONST LCD_RESOLUTION mResolutions[] = {
+STATIC CONST DISPLAY_MODE mDisplayModes[] = {
   {   // Mode 0 : VGA : 640 x 480 x 24 bpp
-      VGA, VGA_H_RES_PIXELS, VGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      VGA, LCD_BITS_PER_PIXEL_24,
       VGA_OSC_FREQUENCY,
-      VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH,
-      VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH
+      {VGA_H_RES_PIXELS, VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH},
+      {VGA_V_RES_PIXELS, VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH}
   },
   {   // Mode 1 : SVGA : 800 x 600 x 24 bpp
-      SVGA, SVGA_H_RES_PIXELS, SVGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      SVGA, LCD_BITS_PER_PIXEL_24,
       SVGA_OSC_FREQUENCY,
-      SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH,
-      SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH
+      {SVGA_H_RES_PIXELS, SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH},
+      {SVGA_V_RES_PIXELS, SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH}
   },
   {   // Mode 2 : XGA : 1024 x 768 x 24 bpp
-      XGA, XGA_H_RES_PIXELS, XGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      XGA, LCD_BITS_PER_PIXEL_24,
       XGA_OSC_FREQUENCY,
-      XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH,
-      XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH
+      {XGA_H_RES_PIXELS, XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH},
+      {XGA_V_RES_PIXELS, XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH}
   },
   {   // Mode 3 : SXGA : 1280 x 1024 x 24 bpp
-      SXGA, SXGA_H_RES_PIXELS, SXGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      SXGA, LCD_BITS_PER_PIXEL_24,
       (SXGA_OSC_FREQUENCY/2),
-      SXGA_H_SYNC, SXGA_H_BACK_PORCH, SXGA_H_FRONT_PORCH,
-      SXGA_V_SYNC, SXGA_V_BACK_PORCH, SXGA_V_FRONT_PORCH
+      {SXGA_H_RES_PIXELS, SXGA_H_SYNC, SXGA_H_BACK_PORCH, SXGA_H_FRONT_PORCH},
+      {SXGA_V_RES_PIXELS, SXGA_V_SYNC, SXGA_V_BACK_PORCH, SXGA_V_FRONT_PORCH}
   },
   {   // Mode 4 : UXGA : 1600 x 1200 x 24 bpp
-      UXGA, UXGA_H_RES_PIXELS, UXGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      UXGA, LCD_BITS_PER_PIXEL_24,
       (UXGA_OSC_FREQUENCY/2),
-      UXGA_H_SYNC, UXGA_H_BACK_PORCH, UXGA_H_FRONT_PORCH,
-      UXGA_V_SYNC, UXGA_V_BACK_PORCH, UXGA_V_FRONT_PORCH
+      {UXGA_H_RES_PIXELS, UXGA_H_SYNC, UXGA_H_BACK_PORCH, UXGA_H_FRONT_PORCH},
+      {UXGA_V_RES_PIXELS, UXGA_V_SYNC, UXGA_V_BACK_PORCH, UXGA_V_FRONT_PORCH}
   },
   {   // Mode 5 : HD : 1920 x 1080 x 24 bpp
-      HD, HD_H_RES_PIXELS, HD_V_RES_PIXELS, LCD_BITS_PER_PIXEL_24,
+      HD, LCD_BITS_PER_PIXEL_24,
       (HD_OSC_FREQUENCY/2),
-      HD_H_SYNC, HD_H_BACK_PORCH, HD_H_FRONT_PORCH,
-      HD_V_SYNC, HD_V_BACK_PORCH, HD_V_FRONT_PORCH
+      {HD_H_RES_PIXELS, HD_H_SYNC, HD_H_BACK_PORCH, HD_H_FRONT_PORCH},
+      {HD_V_RES_PIXELS, HD_V_SYNC, HD_V_BACK_PORCH, HD_V_FRONT_PORCH}
   },
   {   // Mode 6 : VGA : 640 x 480 x 16 bpp (565 Mode)
-      VGA, VGA_H_RES_PIXELS, VGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_565,
+      VGA, LCD_BITS_PER_PIXEL_16_565,
       VGA_OSC_FREQUENCY,
-      VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH,
-      VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH
+      {VGA_H_RES_PIXELS, VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH},
+      {VGA_V_RES_PIXELS, VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH}
   },
   {   // Mode 7 : SVGA : 800 x 600 x 16 bpp (565 Mode)
-      SVGA, SVGA_H_RES_PIXELS, SVGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_565,
+      SVGA, LCD_BITS_PER_PIXEL_16_565,
       SVGA_OSC_FREQUENCY,
-      SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH,
-      SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH
+      {SVGA_H_RES_PIXELS, SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH},
+      {SVGA_V_RES_PIXELS, SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH}
   },
   {   // Mode 8 : XGA : 1024 x 768 x 16 bpp (565 Mode)
-      XGA, XGA_H_RES_PIXELS, XGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_565,
+      XGA, LCD_BITS_PER_PIXEL_16_565,
       XGA_OSC_FREQUENCY,
-      XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH,
-      XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH
+      {XGA_H_RES_PIXELS, XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH},
+      {XGA_V_RES_PIXELS, XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH}
   },
   {   // Mode 9 : VGA : 640 x 480 x 15 bpp
-      VGA, VGA_H_RES_PIXELS, VGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_555,
+      VGA, LCD_BITS_PER_PIXEL_16_555,
       VGA_OSC_FREQUENCY,
-      VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH,
-      VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH
+      {VGA_H_RES_PIXELS, VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH},
+      {VGA_V_RES_PIXELS, VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH}
   },
   {   // Mode 10 : SVGA : 800 x 600 x 15 bpp
-      SVGA, SVGA_H_RES_PIXELS, SVGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_555,
+      SVGA, LCD_BITS_PER_PIXEL_16_555,
       SVGA_OSC_FREQUENCY,
-      SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH,
-      SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH
+      {SVGA_H_RES_PIXELS, SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH},
+      {SVGA_V_RES_PIXELS, SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH}
   },
   {   // Mode 11 : XGA : 1024 x 768 x 15 bpp
-      XGA, XGA_H_RES_PIXELS, XGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_555,
+      XGA, LCD_BITS_PER_PIXEL_16_555,
       XGA_OSC_FREQUENCY,
-      XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH,
-      XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH
+      {XGA_H_RES_PIXELS, XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH},
+      {XGA_V_RES_PIXELS, XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH}
   },
   {   // Mode 12 : XGA : 1024 x 768 x 15 bpp - All the timing info is derived from Linux Kernel Driver Settings
-      XGA, XGA_H_RES_PIXELS, XGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_16_555,
+      XGA, LCD_BITS_PER_PIXEL_16_555,
       63500000,
-      XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH,
-      XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH
+      {XGA_H_RES_PIXELS, XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH},
+      {XGA_V_RES_PIXELS, XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH}
   },
   {   // Mode 13 : VGA : 640 x 480 x 12 bpp (444 Mode)
-      VGA, VGA_H_RES_PIXELS, VGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_12_444,
+      VGA, LCD_BITS_PER_PIXEL_12_444,
       VGA_OSC_FREQUENCY,
-      VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH,
-      VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH
+      {VGA_H_RES_PIXELS, VGA_H_SYNC, VGA_H_BACK_PORCH, VGA_H_FRONT_PORCH},
+      {VGA_V_RES_PIXELS, VGA_V_SYNC, VGA_V_BACK_PORCH, VGA_V_FRONT_PORCH}
   },
   {   // Mode 14 : SVGA : 800 x 600 x 12 bpp (444 Mode)
-      SVGA, SVGA_H_RES_PIXELS, SVGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_12_444,
+      SVGA, LCD_BITS_PER_PIXEL_12_444,
       SVGA_OSC_FREQUENCY,
-      SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH,
-      SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH
+      {SVGA_H_RES_PIXELS, SVGA_H_SYNC, SVGA_H_BACK_PORCH, SVGA_H_FRONT_PORCH},
+      {SVGA_V_RES_PIXELS, SVGA_V_SYNC, SVGA_V_BACK_PORCH, SVGA_V_FRONT_PORCH}
   },
   {   // Mode 15 : XGA : 1024 x 768 x 12 bpp (444 Mode)
-      XGA, XGA_H_RES_PIXELS, XGA_V_RES_PIXELS, LCD_BITS_PER_PIXEL_12_444,
+      XGA, LCD_BITS_PER_PIXEL_12_444,
       XGA_OSC_FREQUENCY,
-      XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH,
-      XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH
+      {XGA_H_RES_PIXELS, XGA_H_SYNC, XGA_H_BACK_PORCH, XGA_H_FRONT_PORCH},
+      {XGA_V_RES_PIXELS, XGA_V_SYNC, XGA_V_BACK_PORCH, XGA_V_FRONT_PORCH}
   }
 };
 
@@ -308,7 +302,7 @@ LcdPlatformSetMode (
   Status = ArmPlatformSysConfigSetDevice (
              Function,
              OscillatorId,
-             mResolutions[ModeNumber].OscFreq
+             mDisplayModes[ModeNumber].OscFreq
              );
   if (EFI_ERROR (Status)) {
     ASSERT_EFI_ERROR (Status);
@@ -326,7 +320,7 @@ LcdPlatformSetMode (
       // Set the DVI into the new mode
       Status = ArmPlatformSysConfigSet (
                  SYS_CFG_DVIMODE,
-                 mResolutions[ModeNumber].Mode
+                 mDisplayModes[ModeNumber].Mode
                  );
       if (EFI_ERROR (Status)) {
         ASSERT_EFI_ERROR (Status);
@@ -368,11 +362,11 @@ LcdPlatformQueryMode (
   }
 
   Info->Version = 0;
-  Info->HorizontalResolution = mResolutions[ModeNumber].HorizontalResolution;
-  Info->VerticalResolution = mResolutions[ModeNumber].VerticalResolution;
-  Info->PixelsPerScanLine = mResolutions[ModeNumber].HorizontalResolution;
+  Info->HorizontalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
+  Info->VerticalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+  Info->PixelsPerScanLine = mDisplayModes[ModeNumber].Horizontal.Resolution;
 
-  switch (mResolutions[ModeNumber].Bpp) {
+  switch (mDisplayModes[ModeNumber].Bpp) {
     case LCD_BITS_PER_PIXEL_24:
       Info->PixelFormat                   = PixelRedGreenBlueReserved8BitPerColor;
       Info->PixelInformation.RedMask      = LCD_24BPP_RED_MASK;
@@ -400,14 +394,10 @@ LcdPlatformQueryMode (
 /** Returns the display timing information for the requested mode number.
   *
   * @param IN  ModeNumber           Mode Number.
-  * @param OUT HRes                 Pointer to horizontal resolution.
-  * @param OUT HSync                Pointer to horizontal sync width.
-  * @param OUT HBackPorch           Pointer to horizontal back porch.
-  * @param OUT HFrontPorch          Pointer to horizontal front porch.
-  * @param OUT VRes                 Pointer to vertical resolution.
-  * @param OUT VSync                Pointer to vertical sync width.
-  * @param OUT VBackPorch           Pointer to vertical back porch.
-  * @param OUT VFrontPorch          Pointer to vertical front porch.
+  * @param OUT Horizontal           Pointer to horizontal timing parameters.
+  *                                 (Resolution, Sync, Back porch, Front porch)
+  * @param OUT Vertical             Pointer to vertical timing parameters.
+  *                                 (Resolution, Sync, Back porch, Front porch)
   *
   * @retval EFI_SUCCESS             Success if the requested mode is found.
   * @retval EFI_INVALID_PARAMETER   Requested mode not found.
@@ -415,15 +405,9 @@ LcdPlatformQueryMode (
 **/
 EFI_STATUS
 LcdPlatformGetTimings (
-  IN  CONST UINT32                        ModeNumber,
-  OUT UINT32 * CONST                      HRes,
-  OUT UINT32 * CONST                      HSync,
-  OUT UINT32 * CONST                      HBackPorch,
-  OUT UINT32 * CONST                      HFrontPorch,
-  OUT UINT32 * CONST                      VRes,
-  OUT UINT32 * CONST                      VSync,
-  OUT UINT32 * CONST                      VBackPorch,
-  OUT UINT32 * CONST                      VFrontPorch
+  IN  CONST UINT32                  ModeNumber,
+  OUT CONST SCAN_TIMINGS         ** Horizontal,
+  OUT CONST SCAN_TIMINGS         ** Vertical
   )
 {
   if (ModeNumber >= LcdPlatformGetMaxMode ()) {
@@ -431,35 +415,16 @@ LcdPlatformGetTimings (
     return EFI_INVALID_PARAMETER;
   }
 
-  if (HRes == NULL
-    || HSync == NULL
-    || HBackPorch == NULL
-    || HFrontPorch == NULL
-    || VRes == NULL
-    || VSync == NULL
-    || VBackPorch == NULL
-    || VFrontPorch == NULL)
+  if (Horizontal == NULL || Vertical == NULL)
   {
     // One of the pointers is NULL
-    ASSERT (HRes != NULL);
-    ASSERT (HSync != NULL);
-    ASSERT (HBackPorch != NULL);
-    ASSERT (HFrontPorch != NULL);
-    ASSERT (VRes != NULL);
-    ASSERT (VSync != NULL);
-    ASSERT (VBackPorch != NULL);
-    ASSERT (VFrontPorch != NULL);
+    ASSERT (Horizontal != NULL);
+    ASSERT (Vertical != NULL);
     return EFI_INVALID_PARAMETER;
   }
 
-  *HRes           = mResolutions[ModeNumber].HorizontalResolution;
-  *HSync          = mResolutions[ModeNumber].HSync;
-  *HBackPorch     = mResolutions[ModeNumber].HBackPorch;
-  *HFrontPorch    = mResolutions[ModeNumber].HFrontPorch;
-  *VRes           = mResolutions[ModeNumber].VerticalResolution;
-  *VSync          = mResolutions[ModeNumber].VSync;
-  *VBackPorch     = mResolutions[ModeNumber].VBackPorch;
-  *VFrontPorch    = mResolutions[ModeNumber].VFrontPorch;
+  *Horizontal = &mDisplayModes[ModeNumber].Horizontal;
+  *Vertical   = &mDisplayModes[ModeNumber].Vertical;
 
   return EFI_SUCCESS;
 }
@@ -485,7 +450,7 @@ LcdPlatformGetBpp (
     return EFI_INVALID_PARAMETER;
   }
 
-  *Bpp = mResolutions[ModeNumber].Bpp;
+  *Bpp = mDisplayModes[ModeNumber].Bpp;
 
   return EFI_SUCCESS;
 }

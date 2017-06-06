@@ -152,6 +152,14 @@ typedef enum {
   LCD_BITS_PER_PIXEL_12_444
 } LCD_BPP;
 
+// Display timing settings.
+typedef struct {
+  UINT32                      Resolution;
+  UINT32                      Sync;
+  UINT32                      BackPorch;
+  UINT32                      FrontPorch;
+} SCAN_TIMINGS;
+
 /** Platform related initialization function.
   *
   * @param IN Handle               Handle to the LCD device instance.
@@ -219,29 +227,19 @@ LcdPlatformQueryMode (
 /** Returns the display timing information for the requested mode number.
   *
   * @param IN  ModeNumber           Mode Number.
-  * @param OUT HRes                 Pointer to horizontal resolution.
-  * @param OUT HSync                Pointer to horizontal sync width.
-  * @param OUT HBackPorch           Pointer to horizontal back porch.
-  * @param OUT HFrontPorch          Pointer to horizontal front porch.
-  * @param OUT VRes                 Pointer to vertical resolution.
-  * @param OUT VSync                Pointer to vertical sync width.
-  * @param OUT VBackPorch           Pointer to vertical back porch.
-  * @param OUT VFrontPorch          Pointer to vertical front porch.
-
+  * @param OUT Horizontal           Pointer to horizontal timing parameters.
+  *                                 (Resolution, Sync, Back porch, Front porch)
+  * @param OUT Vertical             Pointer to vertical timing parameters.
+  *                                 (Resolution, Sync, Back porch, Front porch)
+  *
   * @retval EFI_SUCCESS             Success if the requested mode is found.
   * @retval EFI_INVALID_PARAMETER   Requested mode not found.
 **/
 EFI_STATUS
 LcdPlatformGetTimings (
   IN  UINT32                              ModeNumber,
-  OUT UINT32*                             HRes,
-  OUT UINT32*                             HSync,
-  OUT UINT32*                             HBackPorch,
-  OUT UINT32*                             HFrontPorch,
-  OUT UINT32*                             VRes,
-  OUT UINT32*                             VSync,
-  OUT UINT32*                             VBackPorch,
-  OUT UINT32*                             VFrontPorch
+  OUT CONST SCAN_TIMINGS                  **Horizontal,
+  OUT CONST SCAN_TIMINGS                  **Vertical
   );
 
 /** Return bits per pixel information for a mode number.
