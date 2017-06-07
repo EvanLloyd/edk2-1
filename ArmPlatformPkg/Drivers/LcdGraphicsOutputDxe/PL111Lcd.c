@@ -62,7 +62,7 @@ LcdIdentify (
 **/
 EFI_STATUS
 LcdInitialize (
-  IN EFI_PHYSICAL_ADDRESS   VramBaseAddress
+  IN CONST EFI_PHYSICAL_ADDRESS   VramBaseAddress
   )
 {
   // Define start of the VRAM. This never changes for any graphics mode
@@ -83,7 +83,7 @@ LcdInitialize (
 **/
 EFI_STATUS
 LcdSetMode (
-  IN UINT32  ModeNumber
+  IN CONST UINT32  ModeNumber
   )
 {
   EFI_STATUS        Status;
