@@ -414,9 +414,11 @@ ArmJunoEntryPoint (
 {
   EFI_STATUS            Status;
   EFI_PHYSICAL_ADDRESS  HypBase;
+#ifdef DT_SUPPORTED
   CHAR16                *TextDevicePath;
   UINTN                 TextDevicePathSize;
   VOID                  *Buffer;
+#endif
   UINT32                JunoRevision;
   EFI_EVENT             EndOfDxeEvent;
 
@@ -530,6 +532,7 @@ ArmJunoEntryPoint (
         );
   }
 
+#ifdef DT_SUPPORTED
   //
   // Set up the device path to the FDT.
   //
@@ -549,6 +552,7 @@ ArmJunoEntryPoint (
       );
     return Status;
   }
+#endif
 
   return Status;
 }
