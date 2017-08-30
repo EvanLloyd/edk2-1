@@ -109,7 +109,11 @@ LcdSetMode (
     return Status;
   }
 
+#if (!FixedPcdGetBool (PcdArmHdLcdSwapBlueRedSelect))
   if (ModeInfo.PixelFormat == PixelBlueGreenRedReserved8BitPerColor) {
+#else
+  if (ModeInfo.PixelFormat == PixelRedGreenBlueReserved8BitPerColor) {
+#endif
     MmioWrite32 (HDLCD_REG_RED_SELECT,  (8 << 8 | 16));
     MmioWrite32 (HDLCD_REG_BLUE_SELECT, (8 << 8 | 0));
   } else {

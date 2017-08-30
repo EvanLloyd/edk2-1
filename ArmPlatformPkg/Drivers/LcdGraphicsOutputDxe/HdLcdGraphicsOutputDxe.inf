@@ -55,6 +55,7 @@
 
 [FixedPcd]
   gArmPlatformTokenSpaceGuid.PcdArmHdLcdBase
+  gArmPlatformTokenSpaceGuid.PcdArmHdLcdSwapBlueRedSelect
 
 [FeaturePcd]
   gArmPlatformTokenSpaceGuid.PcdGopDisableOnExitBootServices
