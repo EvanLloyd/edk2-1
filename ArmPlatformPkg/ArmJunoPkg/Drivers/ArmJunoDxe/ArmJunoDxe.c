@@ -1,6 +1,6 @@
 /** @file
 *
-*  Copyright (c) 2013-2015, ARM Limited. All rights reserved.
+*  Copyright (c) 2013-2017, ARM Limited. All rights reserved.
 *
 *  This program and the accompanying materials
 *  are licensed and made available under the terms and conditions of the BSD License
@@ -71,6 +71,7 @@ STATIC CONST EFI_PCI_ROOT_BRIDGE_DEVICE_PATH mPciRootComplexDevicePath = {
 
 EFI_EVENT mAcpiRegistration = NULL;
 
+#ifndef DISABLE_NETWORK
 /**
   This function reads PCI ID of the controller.
 
@@ -355,6 +356,7 @@ ArmJunoSetNicMacAddress ()
 
   return EFI_SUCCESS;
 }
+#endif
 
 /**
   Notification function of the event defined as belonging to the
@@ -395,10 +397,12 @@ OnEndOfDxe (
   Status = gBS->ConnectController (Handle, NULL, PciRootComplexDevicePath, FALSE);
   ASSERT_EFI_ERROR (Status);
 
+#ifndef DISABLE_NETWORK
   Status = ArmJunoSetNicMacAddress ();
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "ArmJunoDxe: Failed to set Marvell Yukon NIC MAC address\n"));
   }
+#endif
 }
 
 EFI_STATUS
