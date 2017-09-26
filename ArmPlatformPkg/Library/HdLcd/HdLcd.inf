@@ -40,3 +40,5 @@
 
 [FixedPcd]
   gArmPlatformTokenSpaceGuid.PcdArmHdLcdBase
+  gArmPlatformTokenSpaceGuid.PcdArmHdLcdSwapBlueRedSelect
+
