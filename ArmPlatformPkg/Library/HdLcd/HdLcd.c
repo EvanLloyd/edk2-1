@@ -56,7 +56,7 @@ GetBytesPerPixel (
 **/
 EFI_STATUS
 LcdInitialize (
-  IN EFI_PHYSICAL_ADDRESS   VramBaseAddress
+  IN CONST EFI_PHYSICAL_ADDRESS   VramBaseAddress
   )
 {
   // Disable the controller
@@ -95,7 +95,7 @@ LcdInitialize (
 **/
 EFI_STATUS
 LcdSetMode (
-  IN UINT32  ModeNumber
+  IN CONST UINT32  ModeNumber
   )
 {
   EFI_STATUS        Status;
