@@ -93,6 +93,10 @@
   gArmPlatformTokenSpaceGuid.PcdPL111LcdBase|0x0|UINT32|0x00000026
   gArmPlatformTokenSpaceGuid.PcdArmHdLcdBase|0x0|UINT32|0x00000027
 
+  ## ARM Mali Display Processor DP500/DP550/DP650
+  gArmPlatformTokenSpaceGuid.PcdArmMaliDpBase|0x0|UINT64|0x00000050
+  gArmPlatformTokenSpaceGuid.PcdArmMaliDpMemoryRegionLength|0x0|UINT32|0x00000051
+
   ## If set, frame buffer memory will be reserved and mapped in the system RAM
   gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferSize|0x0|UINT32|0x00000043
   gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferBase|0x0|UINT64|0x00000044
