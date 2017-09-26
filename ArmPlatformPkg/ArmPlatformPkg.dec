@@ -93,6 +93,10 @@
   gArmPlatformTokenSpaceGuid.PcdPL111LcdBase|0x0|UINT32|0x00000026
   gArmPlatformTokenSpaceGuid.PcdArmHdLcdBase|0x0|UINT32|0x00000027
 
+  ## If set, frame buffer memory will be reserved and mapped in the system RAM
+  gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferSize|0x0|UINT32|0x00000043
+  gArmPlatformTokenSpaceGuid.PcdArmLcdDdrFrameBufferBase|0x0|UINT64|0x00000044
+
   ## PL180 MCI
   gArmPlatformTokenSpaceGuid.PcdPL180SysMciRegAddress|0x00000000|UINT32|0x00000028
   gArmPlatformTokenSpaceGuid.PcdPL180MciBaseAddress|0x00000000|UINT32|0x00000029
