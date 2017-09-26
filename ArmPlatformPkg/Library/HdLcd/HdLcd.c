@@ -22,31 +22,7 @@
 
 #include "HdLcd.h"
 
-STATIC
-UINTN
-GetBytesPerPixel (
-  IN  LCD_BPP       Bpp
-  )
-{
-  switch (Bpp) {
-  case LCD_BITS_PER_PIXEL_24:
-    return 4;
-
-  case LCD_BITS_PER_PIXEL_16_565:
-  case LCD_BITS_PER_PIXEL_16_555:
-  case LCD_BITS_PER_PIXEL_12_444:
-    return 2;
-
-  case LCD_BITS_PER_PIXEL_8:
-  case LCD_BITS_PER_PIXEL_4:
-  case LCD_BITS_PER_PIXEL_2:
-  case LCD_BITS_PER_PIXEL_1:
-    return 1;
-
-  default:
-    return 0;
-  }
-}
+#define BYTES_PER_PIXEL 4
 
 /** Initialize display.
 
@@ -78,10 +54,6 @@ LcdInitialize (
     HDLCD_LITTLE_ENDIAN | HDLCD_4BYTES_PER_PIXEL
     );
 
-  MmioWrite32 (HDLCD_REG_RED_SELECT,   (0 << 16 | 8 << 8 | 0));
-  MmioWrite32 (HDLCD_REG_GREEN_SELECT, (0 << 16 | 8 << 8 | 8));
-  MmioWrite32 (HDLCD_REG_BLUE_SELECT,  (0 << 16 | 8 << 8 | 16));
-
   return EFI_SUCCESS;
 }
 
@@ -92,6 +64,7 @@ LcdInitialize (
   @retval EFI_SUCCESS            Display mode set successfully.
   @retval EFI_DEVICE_ERROR       Reurns an error if display timing
                                  information is not available.
+  @retval !EFI_SUCCESS           Other errors.
 **/
 EFI_STATUS
 LcdSetMode (
@@ -101,8 +74,8 @@ LcdSetMode (
   EFI_STATUS          Status;
   CONST SCAN_TIMINGS *Horizontal;
   CONST SCAN_TIMINGS *Vertical;
-  UINT32              BytesPerPixel;
-  LCD_BPP             LcdBpp;
+
+  EFI_GRAPHICS_OUTPUT_MODE_INFORMATION  ModeInfo;
 
   // Set the video mode timings and other relevant information
   Status = LcdPlatformGetTimings (
@@ -118,13 +91,22 @@ LcdSetMode (
   ASSERT (Horizontal != NULL);
   ASSERT (Vertical != NULL);
 
-  Status = LcdPlatformGetBpp (ModeNumber, &LcdBpp);
+  // Get the pixel format information.
+  Status = LcdPlatformQueryMode (ModeNumber, &ModeInfo);
   if (EFI_ERROR (Status)) {
     ASSERT (FALSE);
     return Status;
   }
 
-  BytesPerPixel = GetBytesPerPixel (LcdBpp);
+  if (ModeInfo.PixelFormat == PixelBlueGreenRedReserved8BitPerColor) {
+    MmioWrite32 (HDLCD_REG_RED_SELECT,  (8 << 8) | 16);
+    MmioWrite32 (HDLCD_REG_BLUE_SELECT, (8 << 8) | 0);
+  } else {
+    MmioWrite32 (HDLCD_REG_BLUE_SELECT, (8 << 8) | 16);
+    MmioWrite32 (HDLCD_REG_RED_SELECT,  (8 << 8) | 0);
+  }
+
+  MmioWrite32 (HDLCD_REG_GREEN_SELECT, (8 << 8) | 8);
 
   // Disable the controller
   MmioWrite32 (HDLCD_REG_COMMAND, HDLCD_DISABLE);
@@ -132,10 +114,13 @@ LcdSetMode (
   // Update the frame buffer information with the new settings
   MmioWrite32 (
     HDLCD_REG_FB_LINE_LENGTH,
-    Horizontal->Resolution * BytesPerPixel
+    Horizontal->Resolution * BYTES_PER_PIXEL
     );
 
-  MmioWrite32 (HDLCD_REG_FB_LINE_PITCH, Horizontal->Resolution * BytesPerPixel);
+  MmioWrite32 (
+    HDLCD_REG_FB_LINE_PITCH,
+    Horizontal->Resolution * BYTES_PER_PIXEL
+    );
 
   MmioWrite32 (HDLCD_REG_FB_LINE_COUNT, Vertical->Resolution - 1);
 

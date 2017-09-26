@@ -97,6 +97,13 @@
   gArmPlatformTokenSpaceGuid.PcdPL180SysMciRegAddress|0x00000000|UINT32|0x00000028
   gArmPlatformTokenSpaceGuid.PcdPL180MciBaseAddress|0x00000000|UINT32|0x00000029
 
+  # Graphics Output Pixel format
+  # 0 : PixelRedGreenBlueReserved8BitPerColor
+  # 1 : PixelBlueGreenRedReserved8BitPerColor
+  # 2 : PixelBitMask
+  # Default is set to UEFI console font format PixelBlueGreenRedReserved8BitPerColor
+  gArmPlatformTokenSpaceGuid.PcdGopPixelFormat|0x00000001|UINT32|0x00000040
+
 [PcdsFixedAtBuild.common,PcdsDynamic.common]
   ## PL031 RealTimeClock
   gArmPlatformTokenSpaceGuid.PcdPL031RtcBase|0x0|UINT32|0x00000024
