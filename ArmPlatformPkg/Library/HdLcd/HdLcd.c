@@ -122,15 +122,15 @@ LcdSetMode (
              &VBackPorch,
              &VFrontPorch
              );
-  ASSERT_EFI_ERROR (Status);
   if (EFI_ERROR (Status)) {
-    return EFI_DEVICE_ERROR;
+    ASSERT (FALSE);
+    return Status;
   }
 
   Status = LcdPlatformGetBpp (ModeNumber, &LcdBpp);
-  ASSERT_EFI_ERROR (Status);
   if (EFI_ERROR (Status)) {
-    return EFI_DEVICE_ERROR;
+    ASSERT (FALSE);
+    return Status;
   }
 
   BytesPerPixel = GetBytesPerPixel (LcdBpp);
@@ -174,9 +174,6 @@ LcdShutdown (VOID)
 
   @retval EFI_SUCCESS            Returns success if platform implements a HDLCD
                                  controller.
-
-  @retval EFI_NOT_FOUND          HDLCD display controller not found on the
-                                 platform
 **/
 EFI_STATUS
 LcdIdentify (VOID)

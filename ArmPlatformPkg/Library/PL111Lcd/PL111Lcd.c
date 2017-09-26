@@ -105,15 +105,15 @@ LcdSetMode (
              &VBackPorch,
              &VFrontPorch
              );
-  ASSERT_EFI_ERROR (Status);
   if (EFI_ERROR (Status)) {
-    return EFI_DEVICE_ERROR;
+    ASSERT (FALSE);
+    return Status;
   }
 
   Status = LcdPlatformGetBpp (ModeNumber, &LcdBpp);
-  ASSERT_EFI_ERROR (Status);
   if (EFI_ERROR (Status)) {
-    return EFI_DEVICE_ERROR;
+    ASSERT (FALSE);
+    return Status;
   }
 
   // Disable the CLCD_LcdEn bit
