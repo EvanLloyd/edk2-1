@@ -107,8 +107,8 @@ M: Hao Wu <hao.a.wu@intel.com>
 
 DynamicTablesPkg
 W: https://github.com/tianocore/tianocore.github.io/wiki/DynamicTablesPkg
-M: Evan Lloyd <Evan.Lloyd@arm.com>
 M: Sami Mujawar <Sami.Mujawar@arm.com>
+M: Alexei Fedorov <Alexei.Fedorov@arm.com>
 
 EdkCompatibilityPkg
 W: https://github.com/tianocore/tianocore.github.io/wiki/EdkCompatibilityPkg
